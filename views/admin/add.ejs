@@ -1,0 +1,11 @@
+<h2>Add New Question</h2>
+<form action="/admin/add" method="POST">
+  <input class="form-control mb-2" name="subject" placeholder="Subject" required>
+  <input class="form-control mb-2" name="type" placeholder="Type (MCQ, etc.)" required>
+  <input class="form-control mb-2" name="difficulty" placeholder="Difficulty (Easy, Medium, Hard)" required>
+  <textarea class="form-control mb-2" name="question" placeholder="Question" required></textarea>
+  <input class="form-control mb-2" name="options" placeholder="Options (comma separated)" required>
+  <input class="form-control mb-2" name="correct_answer" placeholder="Correct Answer" required>
+  <textarea class="form-control mb-2" name="explanation" placeholder="Explanation"></textarea>
+  <button class="btn btn-success">Add Question</button>
+</form>

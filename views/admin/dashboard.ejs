@@ -1,0 +1,32 @@
+<h2>Admin Dashboard</h2>
+<a href="/admin/add" class="btn btn-primary mb-3">Add New Question</a>
+
+<table class="table table-striped">
+<thead>
+<tr>
+  <th>ID</th>
+  <th>Subject</th>
+  <th>Type</th>
+  <th>Difficulty</th>
+  <th>Question</th>
+  <th>Actions</th>
+</tr>
+</thead>
+<tbody>
+<% questions.forEach(q => { %>
+<tr>
+  <td><%= q.id %></td>
+  <td><%= q.subject %></td>
+  <td><%= q.type %></td>
+  <td><%= q.difficulty %></td>
+  <td><%= q.question %></td>
+  <td>
+    <a href="/admin/edit/<%= q.id %>" class="btn btn-warning btn-sm">Edit</a>
+    <form action="/admin/delete/<%= q.id %>" method="POST" style="display:inline">
+      <button class="btn btn-danger btn-sm">Delete</button>
+    </form>
+  </td>
+</tr>
+<% }) %>
+</tbody>
+</table>

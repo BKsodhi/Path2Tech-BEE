@@ -1,0 +1,40 @@
+<% title = subject + " - " + difficulty + " Results" %>
+
+<div class="container my-4">
+  <h2 class="text-center fw-bold mb-4 text-primary">
+    <%= subject %> - <%= difficulty %> Results
+  </h2>
+  <p class="text-center">Score: <strong><%= score %>/<%= total %></strong> (<%= percentage %>%)</p>
+
+  <% feedback.forEach((q, i) => { %>
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5>Q<%= i + 1 %>. <%= q.question %></h5>
+
+        <!-- User Answer -->
+        <p>Your Answer: 
+          <strong class="<%= q.isCorrect ? 'text-success' : 'text-danger' %>">
+            <%= q.userAnswer %>
+          </strong>
+        </p>
+
+        <!-- Correct Answer -->
+        <p>Correct Answer: <strong class="text-success"><%= q.correctAnswer %></strong></p>
+
+        <!-- Explanation if available -->
+        <% if(q.explanation) { %>
+          <div class="alert alert-info mt-2">
+            <strong>Explanation:</strong> <%= q.explanation %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  <% }) %>
+
+  <div class="text-center mt-4">
+    <a href="/modules/<%= subject %>/<%= type %>/<%= difficulty %>" class="btn btn-primary">Try Again</a>
+  </div>
+</div>
+
+
+
