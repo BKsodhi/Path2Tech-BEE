@@ -1,0 +1,78 @@
+<%- include('../partials/navbar') %>
+
+<div class="min-h-screen bg-light p-4">
+  <div class="row">
+    <!-- Left half: Question -->
+    <div class="col-md-6">
+      <div class="bg-white shadow-sm p-4 rounded-3">
+        <h3 class="text-primary fw-bold"><%= question.title %></h3>
+        <p class="mt-3"><%= question.description %></p>
+
+        <h5 class="mt-4 fw-semibold">Example Input:</h5>
+        <pre class="bg-light p-2 rounded"><%= question.inputExample %></pre>
+
+        <h5 class="mt-3 fw-semibold">Expected Output:</h5>
+        <pre class="bg-light p-2 rounded"><%= question.outputExample %></pre>
+      </div>
+    </div>
+
+    <!-- Right half: Code editor -->
+    <div class="col-md-6 d-flex flex-column">
+      <div class="bg-white shadow-sm p-3 rounded-3 flex-grow-1 d-flex flex-column">
+        <h4 class="text-primary fw-semibold mb-3">Write Your Code:</h4>
+
+        <textarea id="codeEditor" class="form-control flex-grow-1 font-monospace" placeholder="Write your code here..."></textarea>
+
+        <div class="d-flex justify-content-end mt-3">
+          <button id="runBtn" class="btn btn-primary me-2">Run</button>
+          <button id="submitBtn" class="btn btn-success">Submit</button>
+        </div>
+
+        <div id="outputBox" class="border mt-3 p-2 rounded bg-light d-none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const runBtn = document.getElementById("runBtn");
+  const submitBtn = document.getElementById("submitBtn");
+  const codeEditor = document.getElementById("codeEditor");
+  const outputBox = document.getElementById("outputBox");
+
+  const inputArr = [2,7,11,15];
+  const target = 9;
+  const expectedOutput = JSON.stringify([0,1]);
+
+  function showOutput(text, success = true) {
+    outputBox.classList.remove("d-none");
+    outputBox.style.borderColor = success ? "#28a745" : "#dc3545";
+    outputBox.textContent = text;
+  }
+
+  runBtn.addEventListener("click", () => {
+    const userCode = codeEditor.value;
+    try {
+      const func = new Function("nums", "target", userCode + "; return twoSum(nums, target);");
+      const result = func(inputArr, target);
+      showOutput("Output: " + JSON.stringify(result), true);
+    } catch (err) {
+      showOutput("Error: " + err.message, false);
+    }
+  });
+
+  submitBtn.addEventListener("click", () => {
+    const userCode = codeEditor.value;
+    try {
+      const func = new Function("nums", "target", userCode + "; return twoSum(nums, target);");
+      const result = func(inputArr, target);
+      if (JSON.stringify(result) === expectedOutput) {
+        showOutput("✅ Correct Output! Well done!", true);
+      } else {
+        showOutput(`❌ Incorrect Output. Expected: ${expectedOutput}, Got: ${JSON.stringify(result)}`, false);
+      }
+    } catch (err) {
+      showOutput("Error: " + err.message, false);
+    }
+  });
+</script>

@@ -1,0 +1,78 @@
+<% include ../partials/navbar.ejs %>
+
+<div class="container my-4">
+  <h2 class="fw-bold text-primary"><%= problem.title %></h2>
+
+  <div class="card p-3 shadow-sm mb-4">
+    <p><strong>Problem Statement:</strong> <%= problem.problem_statement %></p>
+    <p><strong>Input Format:</strong> <%= problem.input_format %></p>
+    <p><strong>Output Format:</strong> <%= problem.output_format %></p>
+    <p><strong>Constraints:</strong> <%= problem.constraints %></p>
+    <p><strong>Sample Input:</strong> <%= problem.sample_input %></p>
+    <p><strong>Sample Output:</strong> <%= problem.sample_output %></p>
+  </div>
+
+  <form id="codeForm">
+    <textarea id="codeArea" class="form-control mb-3" rows="12" spellcheck="false">public class Main {
+    public static void main(String[] args) throws Exception {
+        java.util.Scanner sc = new java.util.Scanner(System.in);
+        // write your logic here
+    }
+}</textarea>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button type="button" class="btn btn-secondary" id="resetBtn">Reset</button>
+      <button type="button" class="btn btn-info" id="runBtn">Run</button>
+      <button type="button" class="btn btn-success" id="submitBtn">Submit</button>
+    </div>
+  </form>
+
+  <div id="outputSection" class="mt-4"></div>
+</div>
+
+<script>
+const resetBtn = document.getElementById('resetBtn');
+const runBtn = document.getElementById('runBtn');
+const submitBtn = document.getElementById('submitBtn');
+const outputSection = document.getElementById('outputSection');
+const codeArea = document.getElementById('codeArea');
+
+resetBtn.addEventListener('click', () => codeArea.value = '');
+runBtn.addEventListener('click', async () => {
+  outputSection.innerHTML = 'Running...';
+  const res = await fetch(`/coding/run/<%= problem.id %>`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ code: codeArea.value })
+  });
+  const data = await res.json();
+  if (data.error) return outputSection.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+  outputSection.innerHTML = `
+    <div class="alert alert-info">
+      <strong>Input:</strong> ${data.input}<br>
+      <strong>Expected:</strong> ${data.expected}<br>
+      <strong>Output:</strong> ${data.output}
+    </div>`;
+});
+
+submitBtn.addEventListener('click', async () => {
+  outputSection.innerHTML = 'Submitting...';
+  const res = await fetch(`/coding/submit/<%= problem.id %>`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ code: codeArea.value })
+  });
+  const data = await res.json();
+  if (data.error) return outputSection.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+
+  const resultsHTML = data.results.map(r =>
+    `<li class="list-group-item ${r.passed ? 'text-success' : 'text-danger'}">
+      ${r.passed ? '✔️' : '❌'} Input: ${r.input} → Output: ${r.output} (Expected: ${r.expected})
+    </li>`
+  ).join('');
+
+  outputSection.innerHTML = `
+    <div class="alert alert-success"><strong>${data.passed}/${data.total}</strong> test cases passed.</div>
+    <ul class="list-group mt-3">${resultsHTML}</ul>`;
+});
+</script>

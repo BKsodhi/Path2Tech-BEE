@@ -4,12 +4,19 @@
   <h2 class="text-center fw-bold mb-4 text-primary">
     <%= subject %> - <%= difficulty %> Results
   </h2>
-  <p class="text-center">Score: <strong><%= score %>/<%= total %></strong> (<%= percentage %>%)</p>
+
+  <div class="text-center mb-4">
+    <h4>
+      Score: 
+      <strong class="text-success"><%= score %></strong> / <%= total %> 
+      (<%= percentage %>%)
+    </h4>
+  </div>
 
   <% feedback.forEach((q, i) => { %>
-    <div class="card mb-3">
+    <div class="card mb-3 border-0 shadow-sm">
       <div class="card-body">
-        <h5>Q<%= i + 1 %>. <%= q.question %></h5>
+        <h5 class="fw-bold mb-3">Q<%= i + 1 %>. <%= q.question %></h5>
 
         <!-- User Answer -->
         <p>Your Answer: 
@@ -19,11 +26,15 @@
         </p>
 
         <!-- Correct Answer -->
-        <p>Correct Answer: <strong class="text-success"><%= q.correctAnswer %></strong></p>
+        <% if (!q.isCorrect) { %>
+          <p>Correct Answer: 
+            <strong class="text-success"><%= q.correctAnswer %></strong>
+          </p>
+        <% } %>
 
-        <!-- Explanation if available -->
-        <% if(q.explanation) { %>
-          <div class="alert alert-info mt-2">
+        <!-- Explanation -->
+        <% if (q.explanation) { %>
+          <div class="alert alert-info mt-3">
             <strong>Explanation:</strong> <%= q.explanation %>
           </div>
         <% } %>
@@ -32,9 +43,12 @@
   <% }) %>
 
   <div class="text-center mt-4">
-    <a href="/modules/<%= subject %>/<%= type %>/<%= difficulty %>" class="btn btn-primary">Try Again</a>
+    <a href="/modules/<%= subject %>/<%= type %>/<%= difficulty %>" class="btn btn-primary px-4">Try Again</a>
   </div>
 </div>
 
-
-
+<style>
+  .text-success { font-weight: 600; }
+  .text-danger { font-weight: 600; }
+  .alert-info { background-color: #e8f4fd; border-left: 4px solid #0d6efd; }
+</style>

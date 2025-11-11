@@ -1,0 +1,29 @@
+<% include ../partials/navbar.ejs %>
+
+<div class="container my-4">
+  <h2 class="fw-bold text-center text-primary">Coding Practice - Java</h2>
+
+  <!-- Difficulty Tabs -->
+  <% const difficulties = ["Easy", "Medium", "Hard"]; %>
+  <ul class="nav nav-tabs my-4 justify-content-center">
+    <% difficulties.forEach(diff => { %>
+      <li class="nav-item">
+        <a class="nav-link <%= diff === difficulty ? 'active' : '' %>" href="/coding/<%= diff %>"><%= diff %></a>
+      </li>
+    <% }) %>
+  </ul>
+
+  <!-- Problems List -->
+  <div class="list-group shadow-sm">
+    <% if (problems.length === 0) { %>
+      <div class="text-center text-muted p-4">No problems available.</div>
+    <% } else { %>
+      <% problems.forEach(p => { %>
+        <a href="/coding/problem/<%= p.id %>" class="list-group-item list-group-item-action">
+          <strong><%= p.title %></strong>
+          <span class="badge bg-secondary float-end"><%= p.difficulty %></span>
+        </a>
+      <% }) %>
+    <% } %>
+  </div>
+</div>

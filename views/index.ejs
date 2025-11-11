@@ -1,11 +1,6 @@
 <% title = "Home - Path2Tech" %>
 
-<!-- <div class="text-center my-5">
-  <h1 class="fw-bold text-primary">Welcome to Path2Tech</h1>
-  <p class="lead">Your personalized platform for mastering concepts with interactive practice.</p>
-  <a href="/progress" class="btn btn-warning mt-3">View Your Progress</a>
-</div> -->
-<!-- Why Path2Tech Section -->
+<!-- Welcome Section -->
 <div class="my-5 p-5 text-center bg-light rounded shadow-sm">
   <h1 class="fw-bold text-primary">Welcome to Path2Tech: Prep.Track.Succeed</h1><br>
   <h2 class="fw-bold text-primary mb-3">Why Path2Tech?</h2>
@@ -15,7 +10,8 @@
     with Easy, Medium, and Hard difficulty levels for each subject.
   </p>
 </div>
-<!-- Subjects Section -->
+
+<!-- MCQ Subjects Section -->
 <div class="row g-4 my-4">
   <% const subjects = [
       { name: "Java", icon: "bi-code-slash", color: "text-primary" },
@@ -46,26 +42,20 @@
     </div>
   <% }) %>
 </div>
+
+<!-- Progress Section -->
 <div class="text-center my-5">
-  <!-- <h1 class="fw-bold text-primary">Welcome to Path2Tech</h1> -->
   <p class="lead">Your personalized platform for mastering concepts with interactive practice.</p>
   <a href="/progress" class="btn btn-warning mt-3">View Your Progress</a>
 </div>
-<!-- Why Path2Tech Section
+
+<!-- 🧩 New Coding Practice Section -->
 <div class="my-5 p-5 text-center bg-light rounded shadow-sm">
-  <h2 class="fw-bold text-primary mb-3">Why Path2Tech?</h2>
+  <h2 class="fw-bold text-success mb-3">Enhance Your Coding Skills</h2>
   <p class="lead">
-    Path2Tech helps you master concepts through interactive MCQs, track your progress,
-    and improve your coding and system knowledge effectively. Learn at your pace,
-    with Easy, Medium, and Hard difficulty levels for each subject.
+    Practice hands-on Java coding problems. Write, run, and test your code — just like real interviews!
   </p>
-</div> -->
-
-
-
-
-
-
-
-
-
+  <a href="/coding" class="btn btn-success mt-3">
+    <i class="bi bi-terminal"></i> Start Coding Practice
+  </a>
+</div>
