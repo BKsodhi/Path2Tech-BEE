@@ -1,0 +1,10 @@
+<% /* Admin navbar: 4 options - Home (manage questions), Users Progress, Registered Users, Logout */ %>
+<% const isActive = (path) => (current === path ? 'active' : ''); %>
+<li class="nav-item"><a class="nav-link <%= isActive('/admin/dashboard') %>" href="/admin/dashboard">Home</a></li>
+<li class="nav-item"><a class="nav-link <%= isActive('/admin/user-progress') %>" href="/admin/user-progress">Users Progress</a></li>
+<li class="nav-item"><a class="nav-link <%= isActive('/admin/users') %>" href="/admin/users">Registered Users</a></li>
+<li class="nav-item">
+	<form action="/logout" method="POST" class="d-inline">
+		<button type="submit" class="btn btn-danger btn-sm">Logout</button>
+	</form>
+</li>

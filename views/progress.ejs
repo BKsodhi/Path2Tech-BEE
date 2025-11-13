@@ -1,0 +1,188 @@
+<% title = "My Progress - Path2Tech" %>
+
+<div class="container my-5">
+  <h2 class="text-center fw-bold mb-5 text-primary">📊 My Progress Dashboard</h2>
+
+  <!-- Summary Cards -->
+  <div class="row mb-5 text-center">
+    <% 
+      const totalSubjects = summary.length;
+      const avgPercentage = summary.length 
+        ? (summary.reduce((acc, s) => acc + Number(s.percentage), 0) / totalSubjects).toFixed(2)
+        : 0;
+      const bestScore = summary.length
+        ? Math.max(...summary.map(s => Number(s.percentage)))
+        : 0;
+      const totalAttempts = summary.reduce((acc, s) => acc + s.attempts, 0);
+    %>
+    <div class="col-md-4 mb-3">
+      <div class="card chart-card text-white bg-success">
+        <h5>Average %</h5>
+        <p class="fs-2 fw-bold"><%= avgPercentage %>%</p>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card chart-card text-white bg-primary">
+        <h5>Best Score</h5>
+        <p class="fs-2 fw-bold"><%= bestScore %>%</p>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card chart-card text-dark bg-warning">
+        <h5>Total Attempts</h5>
+        <p class="fs-2 fw-bold"><%= totalAttempts %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Performance by Subject Table -->
+  <h4 class="fw-bold mb-3">Performance Summary</h4>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered shadow-sm align-middle">
+      <thead class="table-primary">
+        <tr>
+          <th>Subject</th>
+          <th>Type</th>
+          <th>Difficulty</th>
+          <th>Attempts</th>
+          <th>Percentage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% summary.forEach(s => { %>
+          <tr class="<%= s.percentage < 50 ? 'table-danger' : 'table-success' %>">
+            <td><%= s.subject %></td>
+            <td><%= s.type %></td>
+            <td><%= s.difficulty %></td>
+            <td><%= s.attempts %></td>
+            <td><%= Number(s.percentage).toFixed(2) %>%</td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Attempt History Table -->
+  <h4 class="fw-bold mb-3"> Attempt History</h4>
+  <div class="table-responsive mb-5">
+    <table class="table table-striped shadow-sm align-middle">
+      <thead class="table-secondary">
+        <tr>
+          <th>Date</th>
+          <th>Subject</th>
+          <th>Difficulty</th>
+          <th>Score</th>
+          <th>Percentage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% attempts.forEach(a => { %>
+          <tr>
+            <td><%= new Date(a.created_at).toLocaleString() %></td>
+            <td><%= a.subject %></td>
+            <td><%= a.difficulty %></td>
+            <td><%= a.score %>/<%= a.total %></td>
+            <td><%= Number(a.percentage).toFixed(2) %>%</td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="row">
+    <div class="col-lg-6 mb-4">
+      <div class="card chart-card">
+        <canvas id="lineChart"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+      <div class="card chart-card">
+        <canvas id="pieChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const summaryData = <%- JSON.stringify(summary) %>;
+
+  // Line Chart: Performance by Subject & Difficulty
+  new Chart(document.getElementById('lineChart'), {
+    type: 'line',
+    data: {
+      labels: summaryData.map(s => `${s.subject} (${s.difficulty})`),
+      datasets: [{
+        label: 'Performance %',
+        data: summaryData.map(s => Number(s.percentage)),
+        borderColor: '#1b88e1',
+        backgroundColor: 'rgba(27,136,225,0.2)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 5,
+        pointHoverRadius: 7
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, max: 100, ticks: { stepSize: 10 } },
+        x: { ticks: { autoSkip: false } }
+      }
+    }
+  });
+
+  // Pie Chart: Overall Subject Distribution
+  new Chart(document.getElementById('pieChart'), {
+    type: 'pie',
+    data: {
+      labels: summaryData.map(s => s.subject),
+      datasets: [{
+        data: summaryData.map(s => Number(s.percentage)),
+        backgroundColor: ['#43a047','#1b88e1','#ff9800','#f44336','#9c27b0','#00bcd4']
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 20 } } }
+    }
+  });
+</script>
+
+
+<style>
+  /* Chart card styling */
+  .chart-card {
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    background-color: #fff;
+    height: 400px; /* fixed height for even charts */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Ensure canvas fills the card */
+  .chart-card canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  
+</style>
+
+
+
+
+
+
+
+
+
+
+
+

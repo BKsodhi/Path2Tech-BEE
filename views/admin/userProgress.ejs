@@ -1,0 +1,37 @@
+<h2>All Users' Progress</h2>
+
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Attempt ID</th>
+			<th>User</th>
+			<th>Subject</th>
+			<th>Type</th>
+			<th>Difficulty</th>
+			<th>Score</th>
+			<th>Total</th>
+			<th>Percentage</th>
+			<th>Date</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% if (attempts && attempts.length) { %>
+			<% attempts.forEach(a => { %>
+				<tr>
+					<td><%= a.id %></td>
+					<td><%= a.username %> (id:<%= a.user_id %>)</td>
+					<td><%= a.subject %></td>
+					<td><%= a.type %></td>
+					<td><%= a.difficulty %></td>
+					<td><%= a.score %></td>
+					<td><%= a.total %></td>
+					<td><%= ((a.score / (a.total||1)) * 100).toFixed(2) %></td>
+					<td><%= new Date(a.created_at).toLocaleString() %></td>
+				</tr>
+			<% }) %>
+		<% } else { %>
+			<tr><td colspan="9">No progress attempts found.</td></tr>
+		<% } %>
+	</tbody>
+</table>
+

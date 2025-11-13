@@ -1,0 +1,11 @@
+<h2>Edit Question</h2>
+<form action="/admin/edit/<%= question.id %>" method="POST">
+  <input class="form-control mb-2" name="subject" value="<%= question.subject %>" required>
+  <input class="form-control mb-2" name="type" value="<%= question.type %>" required>
+  <input class="form-control mb-2" name="difficulty" value="<%= question.difficulty %>" required>
+  <textarea class="form-control mb-2" name="question" required><%= question.question %></textarea>
+  <input class="form-control mb-2" name="options" value="<%= question.options.join(',') %>" required>
+  <input class="form-control mb-2" name="correct_answer" value="<%= question.correct_answer %>" required>
+  <textarea class="form-control mb-2" name="explanation"><%= question.explanation %></textarea>
+  <button class="btn btn-success">Update Question</button>
+</form>
