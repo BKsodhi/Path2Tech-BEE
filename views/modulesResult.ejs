@@ -1,54 +1,85 @@
 <% title = subject + " - " + difficulty + " Results" %>
 
-<div class="container my-4">
-  <h2 class="text-center fw-bold mb-4 text-primary">
-    <%= subject %> - <%= difficulty %> Results
-  </h2>
+<div class="container my-5">
+  <div class="card text-center mb-5 p-4 shadow-lg" 
+       style="background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: #fff; border-radius: 20px;">
+    
+    <h1 class="fw-bolder mb-3" style="font-size: 3rem; letter-spacing: 2px;">
+      <% if (percentage >= 80) { %>
+        🎉 EXCELLENT WORK!
+      <% } else if (percentage >= 50) { %>
+        👍 GREAT EFFORT!
+      <% } else { %>
+        💡 TIME TO REVIEW!
+      <% } %>
+    </h1>
 
-  <div class="text-center mb-4">
-    <h4>
-      Score: 
-      <strong class="text-success"><%= score %></strong> / <%= total %> 
+    <h2 class="mb-0">
+      Your Final Score: 
+      <strong style="color: var(--accent-color); font-size: 3.5rem;"><%= score %> / <%= total %></strong> 
       (<%= percentage %>%)
-    </h4>
+    </h2>
+    
   </div>
 
+  <h3 class="fw-bold mb-4" style="color: var(--text-color);">Detailed Review</h3>
+
   <% feedback.forEach((q, i) => { %>
-    <div class="card mb-3 border-0 shadow-sm">
+    <% const cardColor = q.isCorrect ? 'border-success' : 'border-danger'; %>
+    <% const bgColor = q.isCorrect ? '#e8f5e9' : '#fbe9e7'; %>
+    
+    <div class="card mb-4 shadow-sm <%= cardColor %>" style="border-width: 2px; border-radius: 12px; background-color: <%= bgColor %>;">
       <div class="card-body">
-        <h5 class="fw-bold mb-3">Q<%= i + 1 %>. <%= q.question %></h5>
+        
+        <h5 class="fw-bold mb-3 d-flex align-items-center" style="color: var(--text-color);">
+          <i class="bi <%= q.isCorrect ? 'bi-check-circle-fill text-success' : 'bi-x-octagon-fill text-danger' %> me-2 fs-4"></i>
+          Q<%= i + 1 %>. <%= q.question %>
+        </h5>
 
-        <!-- User Answer -->
-        <p>Your Answer: 
-          <strong class="<%= q.isCorrect ? 'text-success' : 'text-danger' %>">
-            <%= q.userAnswer %>
-          </strong>
-        </p>
+        <div class="ms-4">
+            <p class="mb-1">Your Answer: 
+              <strong class="<%= q.isCorrect ? 'text-success' : 'text-danger' %> fw-bold">
+                <%= q.userAnswer %>
+              </strong>
+            </p>
 
-        <!-- Correct Answer -->
-        <% if (!q.isCorrect) { %>
-          <p>Correct Answer: 
-            <strong class="text-success"><%= q.correctAnswer %></strong>
-          </p>
-        <% } %>
+            <% if (!q.isCorrect) { %>
+              <p class="mb-1">Correct Answer: 
+                <strong class="text-success fw-bold"><%= q.correctAnswer %></strong>
+              </p>
+              
+              <p class="mt-3 small" style="color: var(--danger-color);">
+                <i class="bi bi-lightbulb-fill me-1"></i> **Tip:** Review the concepts related to this topic!
+                </p>
+            <% } else { %>
+                <p class="mt-3 small text-success">
+                    <i class="bi bi-star-fill me-1"></i> You mastered this concept! Well done.
+                </p>
+            <% } %>
+        </div>
 
-        <!-- Explanation -->
         <% if (q.explanation) { %>
-          <div class="alert alert-info mt-3">
-            <strong>Explanation:</strong> <%= q.explanation %>
+          <div class="alert alert-info mt-4 p-3" style="background-color: #e3f2fd; border-left: 5px solid var(--primary-color);">
+            <strong><i class="bi bi-info-circle-fill me-1"></i> Explanation:</strong> <%= q.explanation %>
           </div>
         <% } %>
       </div>
     </div>
   <% }) %>
 
-  <div class="text-center mt-4">
-    <a href="/modules/<%= subject %>/<%= type %>/<%= difficulty %>" class="btn btn-primary px-4">Try Again</a>
+  <div class="text-center mt-5">
+    <a href="/modules/<%= subject %>/<%= type %>/<%= difficulty %>" class="btn btn-primary px-5 py-2 fw-bold me-3">
+        <i class="bi bi-arrow-clockwise me-2"></i> Try Again
+    </a>
+    <a href="/progress" class="btn btn-warning px-5 py-2 fw-bold" style="background-color: var(--accent-color); border-color: var(--accent-color); color: #fff;">
+        <i class="bi bi-speedometer me-2"></i> View Dashboard
+    </a>
   </div>
 </div>
 
 <style>
-  .text-success { font-weight: 600; }
-  .text-danger { font-weight: 600; }
-  .alert-info { background-color: #e8f4fd; border-left: 4px solid #0d6efd; }
+  /* Local styles override for vibrant theme colors */
+  .text-success { color: var(--success-color) !important; font-weight: 700; }
+  .text-danger { color: var(--danger-color) !important; font-weight: 700; }
+  .alert-info { background-color: #e3f2fd; border-left: 5px solid var(--primary-color); }
 </style>

@@ -1,32 +1,152 @@
-<h2>Admin Dashboard</h2>
-<a href="/admin/add" class="btn btn-primary mb-3">Add New Question</a>
+<% title = "Admin Dashboard - Path2Tech" %>
 
-<table class="table table-striped">
-<thead>
-<tr>
-  <th>ID</th>
-  <th>Subject</th>
-  <th>Type</th>
-  <th>Difficulty</th>
-  <th>Question</th>
-  <th>Actions</th>
-</tr>
-</thead>
-<tbody>
-<% questions.forEach(q => { %>
-<tr>
-  <td><%= q.id %></td>
-  <td><%= q.subject %></td>
-  <td><%= q.type %></td>
-  <td><%= q.difficulty %></td>
-  <td><%= q.question %></td>
-  <td>
-    <a href="/admin/edit/<%= q.id %>" class="btn btn-warning btn-sm">Edit</a>
-    <form action="/admin/delete/<%= q.id %>" method="POST" style="display:inline">
-      <button class="btn btn-danger btn-sm">Delete</button>
-    </form>
-  </td>
-</tr>
-<% }) %>
-</tbody>
-</table>
+<style>
+    :root {
+        --primary-charcoal: #1C232B;
+        --primary-dark: #12181F; 
+        --accent-neon: #00FFD1;
+        --edit-color: #FFC300; /* New: Bright Gold/Yellow for Edit */
+        --delete-color: #FF0066; /* New: Intense Digital Red for Delete */
+        --text-color: #F5F7FA;
+        --text-dark: #000000;
+    }
+    
+    .admin-header {
+        color: var(--accent-neon);
+        letter-spacing: 2px;
+        margin-bottom: 30px;
+        text-transform: uppercase;
+    }
+
+    /* NEON ADD BUTTON */
+    .btn-add-neon {
+        background-color: var(--accent-neon);
+        border: 2px solid var(--accent-neon);
+        color: var(--text-dark);
+        font-weight: 700;
+        transition: all 0.3s;
+        box-shadow: 0 0 15px rgba(0, 255, 209, 0.7);
+        border-radius: 6px;
+    }
+    .btn-add-neon:hover {
+        box-shadow: 0 0 25px var(--accent-neon);
+        transform: scale(1.02);
+    }
+    
+    /* TABLE STYLING */
+    .table-console {
+        background-color: var(--primary-dark); 
+        color: var(--text-color);
+        border: 1px solid var(--primary-charcoal); 
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        font-family: Arial, sans-serif; 
+    }
+    
+    /* Table Header */
+    .table-console thead th {
+        background-color: var(--primary-charcoal);
+        color: var(--accent-neon);
+        border-bottom: 3px solid var(--accent-neon); 
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Table Body */
+    .table-console tbody td {
+        border-top: 1px dashed var(--primary-charcoal); 
+        border-bottom: none;
+        padding: 12px 10px;
+    }
+
+    /* Table Striping */
+    .table-console tbody tr:nth-of-type(odd) {
+        background-color: var(--primary-dark);
+    }
+    .table-console tbody tr:nth-of-type(even) {
+        background-color: var(--primary-charcoal);
+    }
+    
+    /* Hover Effect */
+    .table-console tbody tr:hover {
+        background-color: #283743 !important;
+        outline: none;
+    }
+    
+    /* Action Buttons (More prominent) */
+    .btn-action-base {
+        font-weight: 600;
+        padding: 5px 10px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        transition: box-shadow 0.2s, transform 0.2s;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+    }
+
+    .btn-edit-neon {
+        /* UPDATED COLOR: Bright Gold/Yellow */
+        background-color: var(--edit-color);
+        border: 1px solid var(--edit-color);
+        color: var(--text-dark); /* Black text on bright yellow/gold */
+    }
+    .btn-edit-neon:hover {
+        box-shadow: 0 0 10px var(--edit-color);
+        transform: scale(1.05);
+    }
+    
+    .btn-delete-neon {
+        /* UPDATED COLOR: Intense Digital Red */
+        background-color: var(--delete-color);
+        border: 1px solid var(--delete-color);
+        color: var(--text-color); /* Light text on intense red */
+    }
+    .btn-delete-neon:hover {
+        box-shadow: 0 0 10px var(--delete-color);
+        transform: scale(1.05);
+    }
+</style>
+
+<div class="container my-5">
+    <h2 class="admin-header"><i class="bi bi-clipboard-data me-2"></i> Question Management Console</h2>
+
+    <a href="/admin/add" class="btn btn-add-neon mb-4">
+        <i class="bi bi-plus-circle me-2"></i> Deploy New Question
+    </a>
+
+    <div class="table-responsive">
+        <table class="table table-console">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th style="width: 15%;">Subject</th>
+                    <th>Type</th>
+                    <th>Difficulty</th>
+                    <th>Question</th>
+                    <th style="width: 180px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            <% questions.forEach(q => { %>
+                <tr>
+                    <td><%= q.id %></td>
+                    <td><%= q.subject %></td>
+                    <td><%= q.type %></td>
+                    <td><%= q.difficulty %></td>
+                    <td><%= q.question.length > 60 ? q.question.substring(0, 60) + '...' : q.question %></td>
+                    <td>
+                        <a href="/admin/edit/<%= q.id %>" class="btn btn-action-base btn-edit-neon btn-sm me-2">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                        <form action="/admin/delete/<%= q.id %>" method="POST" style="display:inline">
+                            <button class="btn btn-action-base btn-delete-neon btn-sm">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>

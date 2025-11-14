@@ -1,15 +1,177 @@
 <% title = subject + " - " + type + " (" + difficulty + ")" %>
 
-<div class="container my-4">
-  <!-- Page Header -->
-  <div class="text-center mb-4">
+<style>
+  /* 🎨 REVISED DEEP CHARCOAL & NEON THEME (CRISP) */
+  :root {
+      --primary-charcoal: #1C232B; /* Deep Charcoal BG for depth */
+      --primary-dark: #12181F;     /* Slightly darker than card for separators */
+      --accent-neon: #00FFD1;      /* Bright Neon Teal */
+      --success-color: #A3FF00;    /* Bright Neon Lime */
+      --text-color: #E5E7EB;       /* Light White Text */
+      --text-muted-dark: #7B8A99;  /* Muted grey for inactive text */
+      --text-dark: #000000;        /* Pure black text on neon */
+      --card-bg: var(--primary-charcoal); /* Card background set to deep charcoal */
+  }
+
+  .container {
+      color: var(--text-color);
+  }
+
+  /* --- Page Header --- */
+  .main-header h2 {
+      color: var(--primary-charcoal);
+      /* FIX 1: Tighter glow radius for crisp text */
+      /* text-shadow: 0 0 5px rgba(0, 255, 209, 0.8), 0 0 10px rgba(0, 255, 209, 0.4); */
+      letter-spacing: 1px;
+      text-transform: uppercase;
+  }
+  .main-header p {
+      /* FIX 2: Force color to Neon and add subtle shadow for contrast */
+      color: var(--primary-charcoal);
+      opacity: 0.8;
+      text-shadow: 0 0 2px rgba(0, 255, 209, 0.4);
+      margin-top: -5px; 
+      margin-bottom: 2rem;
+  }
+
+  /* --- Difficulty Tabs --- */
+  .nav-tabs { 
+      border-bottom: 2px solid var(--accent-neon);
+  }
+  .nav-tabs .nav-item {
+      /* FIX 3: Increased margin for better spacing */
+      margin: 0 10px; 
+  }
+  .nav-tabs .nav-link { 
+      color: var(--accent-neon); 
+      background-color: var(--primary-dark);
+      border: 1px solid var(--accent-neon);
+      border-bottom: none;
+      box-shadow: 0 0 5px rgba(0, 255, 209, 0.3);
+      font-weight: 500;
+      text-transform: uppercase; 
+      letter-spacing: 0.5px;
+      padding: 0.5rem 1.2rem; /* Adjusted padding for better visual weight */
+  }
+  .nav-tabs .nav-link:hover { 
+      background-color: var(--primary-charcoal); 
+      color: var(--text-color);
+  }
+  .nav-tabs .nav-link.active { 
+      color: var(--text-dark) !important;
+      background-color: var(--accent-neon); 
+      border-color: var(--accent-neon) !important; 
+      font-weight: 700;
+      box-shadow: 0 0 15px var(--accent-neon);
+      transform: translateY(-4px); 
+  }
+
+  /* --- Question Cards --- */
+  .question-card {
+      background-color: var(--card-bg); 
+      border: 2px solid var(--primary-dark); 
+      border-left: 6px solid var(--accent-neon); 
+      border-radius: 8px; 
+      box-shadow: 0 0 18px rgba(0, 255, 209, 0.5); 
+      transition: box-shadow 0.3s, transform 0.3s;
+  }
+  .question-card:hover {
+      transform: scale(1.005);
+      box-shadow: 0 0 30px rgba(0, 255, 209, 0.8);
+  }
+  .question-card h5 {
+      color: var(--text-color);
+      border-bottom: 1px solid rgba(0, 255, 209, 0.2); 
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+  }
+
+  /* --- Bookmark Icon --- */
+  .bookmark {
+      color: var(--accent-neon) !important;
+      filter: opacity(0.5);
+  }
+  .bi-star-fill {
+      color: var(--success-color) !important;
+      filter: drop-shadow(0 0 5px var(--success-color));
+  }
+
+  /* --- Form Options (Radio Buttons) --- */
+  .form-check { margin-bottom: 0.5rem; padding-left: 0; }
+  .form-check-label { 
+      color: var(--text-color); 
+      background-color: var(--primary-dark);
+      border: 1px solid var(--primary-charcoal);
+      border-radius: 4px;
+      padding: 0.75rem 1rem 0.75rem 3rem; 
+      display: block;
+      width: 100%;
+      transition: all 0.2s;
+      position: relative;
+  }
+  
+  .form-check-input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+  }
+  
+  .form-check-label::before {
+      content: '>'; 
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent-neon);
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: all 0.2s;
+  }
+  
+  .form-check-input:checked + .form-check-label {
+      color: var(--success-color); 
+      font-weight: 600;
+      background-color: #0F1A1B; 
+      border-color: var(--success-color);
+      box-shadow: 0 0 10px rgba(163, 255, 0, 0.5); 
+  }
+
+  .form-check-input:checked + .form-check-label::before {
+      content: '✓'; 
+      color: var(--success-color);
+      text-shadow: 0 0 5px var(--success-color);
+  }
+
+  /* --- Submit Button --- */
+  .btn-submit {
+      background-color: var(--accent-neon);
+      border-color: var(--accent-neon);
+      color: var(--text-dark);
+      padding: 1rem 4rem;
+      font-weight: 800;
+      border-radius: 6px;
+      box-shadow: 0 0 40px rgba(0, 255, 209, 0.8);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 1.1rem;
+  }
+  .btn-submit:hover {
+      background-color: #00E3BB;
+      border-color: #00E3BB;
+      transform: translateY(-4px);
+      box-shadow: 0 0 60px rgba(0, 255, 209, 1);
+  }
+
+</style>
+
+<div class="container my-5">
+  <div class="text-center mb-5 main-header">
     <h2 class="fw-bold"><%= subject %> - <%= type %> (<%= difficulty %>)</h2>
-    <p class="text-muted">Answer the following questions and test your knowledge.</p>
+    <p>Path2Tech >> Running Test Suite >> <%= subject %>/<%= difficulty %></p>
   </div>
 
-  <!-- Difficulty Tabs -->
   <% const difficulties = ["Easy", "Medium", "Hard"]; %>
-  <ul class="nav nav-tabs mb-4 justify-content-center">
+  <ul class="nav nav-tabs mb-5 justify-content-center">
     <% difficulties.forEach(diff => { %>
       <li class="nav-item">
         <a class="nav-link <%= diff === difficulty ? 'active' : '' %>" 
@@ -18,15 +180,13 @@
     <% }) %>
   </ul>
 
-  <!-- Question Form -->
   <form id="mcqForm" action="/modules/<%= subject %>/<%= type %>/<%= difficulty %>" method="POST">
     <% questions.forEach((q, index) => { %>
-      <div class="card shadow-sm mb-4 border-0 position-relative">
+      <div class="card shadow-sm mb-4 position-relative question-card">
         <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start mb-2">
+          <div class="d-flex justify-content-between align-items-start mb-3">
             <h5 class="fw-bold">Q<%= index + 1 %>. <%= q.question %></h5>
-            <!-- Bookmark Icon -->
-            <i class="bi bi-star fs-4 text-warning bookmark" 
+            <i class="bi bi-star fs-4 bookmark" 
                style="cursor:pointer;" 
                data-question-id="<%= q.id %>"></i>
           </div>
@@ -46,30 +206,23 @@
       </div>
     <% }) %>
 
-    <div class="text-center mb-5">
-      <button type="submit" class="btn btn-warning px-4">Submit Answers</button>
+    <div class="text-center my-5">
+      <button type="submit" class="btn btn-submit">
+          <i class="bi bi-cpu me-2"></i> Execute Submission
+      </button>
     </div>
   </form>
 </div>
 
 <script>
-  // Bookmark toggle
+  // Bookmark toggle 
   document.querySelectorAll('.bookmark').forEach(star => {
     star.addEventListener('click', () => {
       star.classList.toggle('bi-star');
       star.classList.toggle('bi-star-fill');
       const qId = star.dataset.questionId;
       console.log("Toggled bookmark for question:", qId);
-      // Optional: AJAX call to save bookmark in DB
     });
   });
 </script>
 
-<style>
-  .nav-tabs { justify-content: center; border-bottom: 2px solid #ddd; }
-  .nav-tabs .nav-link { color: #555; font-weight: 500; margin: 0 5px; border: 1px solid transparent; border-radius: 8px 8px 0 0; background-color: var(--light-bg); transition: all 0.3s ease; }
-  .nav-tabs .nav-link:hover { color: var(--primary-blue); background-color: #e0e0e0; }
-  .nav-tabs .nav-link.active { color: #fff !important; background-color: var(--primary-blue); border-color: var(--primary-blue) !important; font-weight: 600; }
-  .bookmark:hover { transform: scale(1.2); transition: transform 0.2s; }
-  .form-check { margin-bottom: 0.5rem; }
-</style>

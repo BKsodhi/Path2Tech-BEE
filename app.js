@@ -113,38 +113,36 @@
 // app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
 
 
-
 const express = require("express");
-const bodyParser = require("body-parser");
 const expressLayouts = require("express-ejs-layouts");
 const session = require("express-session");
 const flash = require("connect-flash");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const axios = require("axios"); // ✅ Added for compiler integration
 
-// Routes
+// ------------------- Routes -------------------
 const progressRoutes = require("./routes/progress");
 const moduleRoutes = require("./routes/modules");
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
+const codingRoutes = require("./routes/coding"); // ✅ Coding challenges route
 
-// ✅ New route for Coding Challenges
-const codingRoutes = require("./routes/coding");
-
-// Middleware
+// ------------------- Middleware -------------------
 const { ensureAuth, ensureGuest, logger, errorHandler } = require("./middleware/auth");
 
-const JWT_SECRET = "jwttoken"; // Hardcoded secret
-const SESSION_SECRET = "path2tech_secret"; // Hardcoded session secret
+// ------------------- Constants -------------------
+const JWT_SECRET = "jwttoken";
+const SESSION_SECRET = "path2tech_secret";
 
 const app = express();
 
 // ------------------- Middleware Setup -------------------
 
-// Body parser
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Body parser (native Express)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Cookie parser
 app.use(cookieParser());
@@ -174,7 +172,7 @@ app.set("layout", "partials/layout");
 // Static files
 app.use(express.static(path.join(__dirname, "public")));
 
-// JWT middleware: attach user to request if token exists
+// ------------------- JWT Middleware -------------------
 app.use((req, res, next) => {
   const token = req.cookies?.token;
   if (token) {
@@ -188,7 +186,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Global template variables
+// ------------------- Global Template Variables -------------------
 app.use((req, res, next) => {
   res.locals.user = req.user || null;
   res.locals.success_msg = req.flash("success_msg");
@@ -207,22 +205,23 @@ app.use("/progress", ensureAuth, progressRoutes);
 app.use("/modules", ensureAuth, moduleRoutes);
 app.use("/admin", ensureAuth, adminRoutes);
 
-// ✅ New Coding route
+// ✅ Coding route (protected)
 app.use("/coding", ensureAuth, codingRoutes);
 
-// ------------------- Default Route -------------------
-// Redirect to login if not logged in
+// ------------------- Root & Defaults -------------------
+
+// Default route → redirect based on user role
 app.get("/", (req, res) => {
   if (!req.user) return res.redirect("/login");
 
-  // If admin, redirect to admin dashboard
-  if (req.user.role === "admin") return res.redirect("/admin/dashboard");
+  if (req.user.role === "admin") {
+    return res.redirect("/admin/dashboard");
+  }
 
-  // Normal user → index/home page
   res.render("index", { title: "Home - Path2Tech" });
 });
 
-// ------------------- 404 handler -------------------
+// ------------------- 404 Handler -------------------
 app.use((req, res) => {
   res.status(404).render("error", {
     title: "404 - Not Found",
@@ -230,15 +229,11 @@ app.use((req, res) => {
   });
 });
 
-// ------------------- Error handling -------------------
+// ------------------- Error Handler -------------------
 app.use(errorHandler);
 
-// ------------------- Start Server -------------------
+// ------------------- Server Start -------------------
 const PORT = 5000;
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
-
-
-
-
-
-
+app.listen(PORT, () =>
+  console.log(`🚀 Server running at http://localhost:${PORT}`)
+);

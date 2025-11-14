@@ -1,62 +1,159 @@
-// controllers/codingController.js
 const CodingProblem = require('../models/codingProblemModel');
-const { executeJava } = require('../utils/codeExecutor');
+const { runSingleTest, clearTempMain } = require('../utils/codeExecutor');
 
-exports.getAllProblems = async (req, res) => {
-  const difficulty = req.params.difficulty || 'Easy';
-  try {
-    const problems = await CodingProblem.getProblemsByDifficulty(difficulty);
-    res.render('coding/codingHome', { title: 'Coding Practice', problems, difficulty });
-  } catch (error) {
-    console.error(error);
-    res.status(500).render('error', { message: 'Error loading coding problems' });
-  }
-};
+const codingController = {
+    // GET /coding/
+    async getCodingHome(req, res, next) {
+        try {
+            const easyProblems = await CodingProblem.getProblemsByDifficulty('Easy');
+            const mediumProblems = await CodingProblem.getProblemsByDifficulty('Medium');
+            const hardProblems = await CodingProblem.getProblemsByDifficulty('Hard');
 
-exports.getProblemById = async (req, res) => {
-  try {
-    const problem = await CodingProblem.getProblemById(req.params.id);
-    if (!problem) return res.status(404).render('error', { message: 'Problem not found' });
+            res.render('coding/codingHome', {
+                title: 'Coding Problems',
+                user: req.user,
+                easyProblems,
+                mediumProblems,
+                hardProblems
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
 
-    res.render('coding/codingProblem', { title: problem.title, problem });
-  } catch (error) {
-    console.error(error);
-    res.status(500).render('error', { message: 'Error loading problem' });
-  }
-};
+    // GET /coding/:id
+    async getCodingProblem(req, res, next) {
+        try {
+            const problemId = parseInt(req.params.id);
+            const problem = await CodingProblem.getProblemById(problemId);
 
-exports.runCode = async (req, res) => {
-  const { code } = req.body;
-  const { id } = req.params;
-  try {
-    const testCases = await CodingProblem.getTestCases(id);
-    const sample = testCases.find(tc => tc.is_sample);
-    if (!sample) return res.status(400).json({ error: 'No sample test case found' });
+            if (!problem) {
+                return res.status(404).render('error', { message: 'Coding problem not found.' });
+            }
 
-    const output = await executeJava(code, sample.input_data);
-    res.json({ input: sample.input_data, expected: sample.expected_output, output: output.trim() });
-  } catch (error) {
-    res.status(500).json({ error: 'Execution failed', details: error.message });
-  }
-};
+            res.render('coding/codingProblem', {
+                title: problem.title,
+                user: req.user,
+                problem,
+                code: '',
+                runResult: null,
+                submissionStatus: null
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
 
-exports.submitCode = async (req, res) => {
-  const { code } = req.body;
-  const { id } = req.params;
-  try {
-    const testCases = await CodingProblem.getTestCases(id);
-    let passed = 0;
-    const results = [];
+    // POST /coding/run/:id
+    async runCode(req, res, next) {
+        try {
+            const problemId = parseInt(req.params.id);
+            const { code } = req.body;
+            const problem = await CodingProblem.getProblemById(problemId);
 
-    for (const tc of testCases) {
-      const output = await executeJava(code, tc.input_data);
-      const passedCase = output.trim() === tc.expected_output.trim();
-      if (passedCase) passed++;
-      results.push({ input: tc.input_data, expected: tc.expected_output, output: output.trim(), passed: passedCase, isSample: tc.is_sample });
+            if (!problem) {
+                return res.status(404).json({ error: 'Problem not found.' });
+            }
+
+            const input = problem.sample_input || '';
+            const expectedOutput = (problem.sample_output || '').trim();
+
+            const runResult = await runSingleTest(code, input);
+            await clearTempMain();
+
+            if (runResult.status === 'error') {
+                return res.status(200).json({
+                    success: false,
+                    error: runResult.stderr,
+                    input,
+                    expected: expectedOutput
+                });
+            }
+
+            const actualOutput = (runResult.stdout || '').trim();
+            const isCorrect = actualOutput === expectedOutput;
+
+            return res.status(200).json({
+                success: true,
+                result: {
+                    input,
+                    expected: expectedOutput,
+                    actual: actualOutput,
+                    status: isCorrect ? 'Passed' : 'Failed'
+                }
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // POST /coding/submit/:id
+    async submitCode(req, res, next) {
+        try {
+            const problemId = parseInt(req.params.id);
+            const { code } = req.body;
+            const problem = await CodingProblem.getProblemById(problemId);
+            const allTestCases = await CodingProblem.getAllTestCases(problemId);
+
+            if (!problem || allTestCases.length === 0) {
+                return res.render('coding/codingProblem', {
+                    title: problem ? problem.title : 'Error',
+                    user: req.user,
+                    problem,
+                    code,
+                    runResult: null,
+                    submissionStatus: { overallStatus: 'Error', message: 'No test cases defined for this problem.' }
+                });
+            }
+
+            const results = [];
+            let passedCount = 0;
+
+            for (const testCase of allTestCases) {
+                const input = testCase.input_data;
+                const expectedOutput = (testCase.expected_output || '').trim();
+                const runResult = await runSingleTest(code, input);
+                const actualOutput = (runResult.stdout || '').trim();
+                const errorMsg = runResult.stderr ? runResult.stderr.trim() : '';
+
+                let status = 'Failed';
+                if (runResult.status === 'error') {
+                    status = 'Error';
+                } else if (actualOutput === expectedOutput) {
+                    status = 'Passed';
+                    passedCount++;
+                }
+
+                results.push({
+                    isSample: testCase.is_sample,
+                    input: testCase.is_sample ? input : 'Hidden Input',
+                    expected: testCase.is_sample ? expectedOutput : 'Hidden Output',
+                    actual: errorMsg ? `Error: ${errorMsg}` : actualOutput,
+                    status
+                });
+            }
+
+            await clearTempMain();
+
+            const submissionSummary = {
+                passedCount,
+                totalCount: allTestCases.length,
+                results,
+                overallStatus: passedCount === allTestCases.length ? 'Accepted' : 'Failed'
+            };
+
+            res.render('coding/codingProblem', {
+                title: problem.title,
+                user: req.user,
+                problem,
+                code,
+                runResult: null,
+                submissionStatus: submissionSummary
+            });
+        } catch (error) {
+            next(error);
+        }
     }
-
-    res.json({ total: testCases.length, passed, results });
-  } catch (error) {
-    res.status(500).json({ error: 'Submission failed', details: error.message });
-  }
 };
+
+module.exports = codingController;

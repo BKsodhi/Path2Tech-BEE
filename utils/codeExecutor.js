@@ -1,23 +1,50 @@
-// utils/codeExecutor.js
 const fs = require('fs');
 const { exec } = require('child_process');
 const path = require('path');
 
-exports.executeJava = (code, input) => {
-  return new Promise((resolve, reject) => {
-    const dir = path.join(__dirname, '../public/temp');
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+const tempDir = path.join(__dirname, '../views/temp');
+const javaFile = path.join(tempDir, 'Main.java');
 
-    const filePath = path.join(dir, 'Main.java');
-    fs.writeFileSync(filePath, code);
+function writeCodeToFile(code) {
+    return fs.promises.writeFile(javaFile, code);
+}
 
-    exec(`javac ${filePath}`, (compileErr) => {
-      if (compileErr) return reject(new Error('Compilation failed'));
+function clearTempMain() {
+    return fs.promises.writeFile(javaFile, '');
+}
 
-      exec(`echo "${input}" | java -cp ${dir} Main`, (runErr, stdout, stderr) => {
-        if (runErr || stderr) return reject(new Error('Runtime Error'));
-        resolve(stdout);
-      });
+function runSingleTest(code, input) {
+    return new Promise(async (resolve) => {
+        try {
+            await writeCodeToFile(code);
+
+            // Compile Main.java
+            exec(`javac ${javaFile}`, (compileErr, stdout, stderr) => {
+                if (compileErr) {
+                    return resolve({ status: 'error', stderr: stderr || compileErr.message });
+                }
+
+                // Run Main class
+                const runProcess = exec(`java -cp ${tempDir} Main`, (runErr, runStdout, runStderr) => {
+                    if (runErr) {
+                        return resolve({ status: 'error', stderr: runStderr || runErr.message });
+                    }
+                    resolve({ status: 'success', stdout: runStdout, stderr: runStderr });
+                });
+
+                // Provide input to the program
+                if (input) {
+                    runProcess.stdin.write(input + '\n');
+                }
+                runProcess.stdin.end();
+            });
+        } catch (err) {
+            resolve({ status: 'error', stderr: err.message });
+        }
     });
-  });
+}
+
+module.exports = {
+    runSingleTest,
+    clearTempMain
 };
