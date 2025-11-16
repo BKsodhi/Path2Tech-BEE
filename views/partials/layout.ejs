@@ -210,7 +210,7 @@ box-shadow: 0 -3px 10px rgba(0,0,0,0.2);
     <div class="container">
       
   <% if (isAdmin) { %>
-      <a class="navbar-brand" href="/admin">
+      <a class="navbar-brand" href="/admin/dashboard">
           <i class="bi bi-shield-lock-fill me-2"></i> ADMIN CONSOLE
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAdmin">
@@ -219,7 +219,7 @@ box-shadow: 0 -3px 10px rgba(0,0,0,0.2);
       <div class="collapse navbar-collapse" id="navbarNavAdmin">
           <ul class="navbar-nav ms-auto align-items-center">
               <li class="nav-item">
-                  <a class="nav-link <%= current.startsWith('/admin') && !current.includes('/users') && !current.includes('/userProgress') ? 'active' : '' %>" href="/admin">
+                  <a class="nav-link <%= current.startsWith('/admin/dashboard') && !current.includes('/users') && !current.includes('/userProgress') ? 'active' : '' %>" href="/admin/dashboard">
                       <i class="bi bi-house-door-fill me-1"></i> Home (Questions)
                   </a>
               </li>
