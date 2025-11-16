@@ -46,17 +46,38 @@
   </div>
 
   <div class="row">
+    <!-- Skill Mastery vs. Platform Average -->
     <div class="col-lg-6 mb-4">
       <div class="card p-4 h-100 shadow">
         <h5 class="fw-bold mb-3 text-center" style="color: var(--text-dark);">🧠 Skill Mastery vs. Platform Average</h5>
         <canvas id="radarChart" style="max-height: 400px;"></canvas>
-        <p class="text-muted text-center mt-3 small">You need to pass `skillData` from the backend to activate this chart.</p>
       </div>
     </div>
+
+    <!-- Global Leaders -->
     <div class="col-lg-6 mb-4">
       <div class="card p-4 h-100 shadow">
         <h5 class="fw-bold mb-3 text-center" style="color: var(--primary-charcoal);"><i class="bi bi-trophy-fill me-2" style="color: var(--accent-neon);"></i> Global Leaders</h5>
-        <p class="text-muted text-center">Implement the Leaderboard table here.</p>
+        <div class="table-responsive">
+          <table class="table table-striped shadow-sm align-middle">
+            <thead class="table-primary">
+              <tr>
+                <th>Rank</th>
+                <th>User</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% leaderboard.forEach((user, index) => { %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><%= user.username %></td>
+                  <td class="fw-bold"><%= Number(user.percentage).toFixed(2) %>%</td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
         <button class="btn btn-sm btn-primary mt-3">View Full Leaderboard</button>
       </div>
     </div>
@@ -139,8 +160,9 @@
 <script>
   const summaryData = <%- JSON.stringify(summary) %>;
   const attemptsData = <%- JSON.stringify(attempts) %>;
+  const skillData = <%- JSON.stringify(skillData) %>;
 
-  // Line Chart: Performance by Subject & Difficulty
+  // Line Chart
   new Chart(document.getElementById('lineChart'), {
     type: 'line',
     data: {
@@ -148,7 +170,7 @@
       datasets: [{
         label: 'Performance %',
         data: summaryData.map(s => Number(s.percentage)),
-        borderColor: '#00FFD1', /* Accent Neon */
+        borderColor: '#00FFD1',
         backgroundColor: 'rgba(0, 255, 209, 0.2)',
         fill: true,
         tension: 0.3,
@@ -166,14 +188,13 @@
     }
   });
 
-  // Pie Chart: Overall Subject Distribution
+  // Pie Chart
   new Chart(document.getElementById('pieChart'), {
     type: 'pie',
     data: {
       labels: summaryData.map(s => s.subject),
       datasets: [{
         data: summaryData.map(s => Number(s.percentage)),
-        // Using Neon, Lime, Salmon, and Charcoal
         backgroundColor: ['#00FFD1', '#A3FF00', '#FF6B6B', '#2D3A47', '#FFD100', '#70FF00']
       }]
     },
@@ -183,36 +204,33 @@
     }
   });
 
-  // --- Radar Chart Placeholder ---
-  const defaultSkillData = [{ subject: 'Java', user_score: 50, avg_score: 65 }, { subject: 'Cloud', user_score: 80, avg_score: 75 }];
-  const skillData = typeof skillData !== 'undefined' ? skillData : defaultSkillData;
-
+  // Radar Chart: Skill Mastery
   new Chart(document.getElementById('radarChart'), {
-      type: 'radar',
-      data: {
-          labels: skillData.map(d => d.subject),
-          datasets: [
-              {
-                  label: 'Your Mastery',
-                  data: skillData.map(d => d.user_score),
-                  backgroundColor: 'rgba(0, 255, 209, 0.4)', /* Accent Neon */
-                  borderColor: '#00FFD1',
-                  pointBackgroundColor: '#00FFD1',
-              },
-              {
-                  label: 'Platform Average',
-                  data: skillData.map(d => d.avg_score),
-                  backgroundColor: 'rgba(163, 255, 0, 0.4)', /* Success Lime */
-                  borderColor: '#A3FF00',
-                  pointBackgroundColor: '#A3FF00',
-              }
-          ]
-      },
-      options: {
-          responsive: true,
-          plugins: { legend: { position: 'top' } },
-          scales: { r: { suggestedMin: 0, suggestedMax: 100, ticks: { stepSize: 20 } } }
-      }
+    type: 'radar',
+    data: {
+      labels: skillData.map(d => d.subject),
+      datasets: [
+        {
+          label: 'Your Mastery',
+          data: skillData.map(d => d.user_score),
+          backgroundColor: 'rgba(0, 255, 209, 0.4)',
+          borderColor: '#00FFD1',
+          pointBackgroundColor: '#00FFD1',
+        },
+        {
+          label: 'Platform Average',
+          data: skillData.map(d => d.avg_score),
+          backgroundColor: 'rgba(163, 255, 0, 0.4)',
+          borderColor: '#A3FF00',
+          pointBackgroundColor: '#A3FF00',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: { r: { suggestedMin: 0, suggestedMax: 100, ticks: { stepSize: 20 } } }
+    }
   });
 </script>
 

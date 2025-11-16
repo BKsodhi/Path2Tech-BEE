@@ -9,6 +9,7 @@ router.get("/", ensureAuth, async (req, res) => {
   try {
     const userId = req.user.id; // FIXED (was req.session.user.id)
 
+    // Fetch attempts for current user
     const attemptsRes = await pool.query(
       `SELECT id, subject, type, difficulty, score, total, created_at
        FROM progress
@@ -44,10 +45,30 @@ router.get("/", ensureAuth, async (req, res) => {
       percentage: Number((s.totalPercentage / s.attempts).toFixed(2))
     }));
 
+    // Skill data for radar chart (example)
+    const skillData = [
+      { subject: "Java", user_score: 70, avg_score: 65 },
+      { subject: "Cloud Computing", user_score: 60, avg_score: 55 },
+      { subject: "System Design", user_score: 50, avg_score: 50 },
+    ];
+
+    // Leaderboard: top 5 users by average percentage
+    const leaderboardRes = await pool.query(
+      `SELECT u.username, AVG(p.score*100.0/p.total) AS percentage
+       FROM users u
+       JOIN progress p ON u.id = p.user_id
+       GROUP BY u.id
+       ORDER BY percentage DESC
+       LIMIT 5`
+    );
+    const leaderboard = leaderboardRes.rows;
+
     res.render("progress", {
       title: "My Progress - Path2Tech",
       attempts,
-      summary
+      summary,
+      skillData,
+      leaderboard
     });
   } catch (err) {
     console.error("Error loading progress:", err.message);
@@ -75,14 +96,3 @@ router.post("/update", ensureAuth, async (req, res) => {
 });
 
 module.exports = router;
-
-
-
-
-
-
-
-
-
-
-
