@@ -1,0 +1,190 @@
+<% title = subject + " - " + type + " (" + difficulty + ")" %>
+
+<script>
+  // Inject server-side progress into client-side JS
+  const progress = <%- JSON.stringify(progress) %>;
+</script>
+
+<style>
+/* Your existing CSS from chat (unchanged) */
+:root { --primary-charcoal:#1C232B; --primary-dark:#12181F; --accent-neon:#00FFD1; --success-color:#A3FF00; --text-color:#E5E7EB; --text-muted-dark:#7B8A99; --text-dark:#000000; --card-bg:var(--primary-charcoal);}
+body { background-color: var(--primary-dark); color: var(--text-color); }
+.container { color: var(--text-color); }
+.main-header h2 { color: var(--accent-neon); letter-spacing: 1px; text-transform: uppercase; }
+.main-header p { color: var(--text-color); opacity: 0.8; text-shadow: 0 0 2px rgba(0,255,209,0.4); margin-top:-5px;margin-bottom:2rem; }
+.nav-tabs { border-bottom: 2px solid var(--accent-neon); }
+.nav-tabs .nav-item { margin: 0 10px; }
+.nav-tabs .nav-link { color: var(--accent-neon); background-color: var(--primary-dark); border: 1px solid var(--accent-neon); border-bottom:none; font-weight:500; text-transform: uppercase; letter-spacing: 0.5px; padding:0.5rem 1.2rem; box-shadow: 0 0 5px rgba(0,255,209,0.3); }
+.nav-tabs .nav-link:hover { background-color: var(--primary-charcoal); color: var(--text-color); }
+.nav-tabs .nav-link.active { color: var(--text-dark) !important; background-color: var(--accent-neon); border-color: var(--accent-neon) !important; font-weight:700; box-shadow: 0 0 15px var(--accent-neon); transform: translateY(-4px); }
+.question-card { background-color: var(--card-bg); border: 2px solid var(--primary-dark); border-left: 6px solid var(--accent-neon); border-radius: 8px; box-shadow: 0 0 18px rgba(0,255,209,0.5); transition: all 0.3s; }
+.question-card:hover { transform: scale(1.005); box-shadow: 0 0 30px rgba(0,255,209,0.8); }
+.question-card h5 { color: var(--text-color); border-bottom: 1px solid rgba(0,255,209,0.2); padding-bottom:10px;margin-bottom:15px; }
+.bookmark { color: var(--accent-neon); opacity:0.5; cursor:pointer; }
+.bi-star-fill { color: var(--success-color); filter: drop-shadow(0 0 5px var(--success-color)); }
+.form-check { margin-bottom:0.5rem; padding-left:0; }
+.form-check-label { color: var(--text-color); background-color: var(--primary-dark); border:1px solid var(--primary-charcoal); border-radius:4px; padding:0.75rem 1rem 0.75rem 3rem; display:block; width:100%; position:relative; transition: all 0.2s; }
+.form-check-input { position:absolute; opacity:0; cursor:pointer; }
+.form-check-label::before { content:'>'; font-size:1.2rem; font-weight:700; color:var(--accent-neon); position:absolute; left:1rem; top:50%; transform:translateY(-50%); transition: all 0.2s; }
+.form-check-input:checked + .form-check-label { color: var(--success-color); font-weight:600; background-color:#0F1A1B; border-color: var(--success-color); box-shadow:0 0 10px rgba(163,255,0,0.5); }
+.form-check-input:checked + .form-check-label::before { content:'✓'; color: var(--success-color); text-shadow:0 0 5px var(--success-color); }
+.btn-submit { background-color: var(--accent-neon); border-color: var(--accent-neon); color: var(--text-dark); padding:1rem 4rem; font-weight:800; border-radius:6px; box-shadow:0 0 40px rgba(0,255,209,0.8); text-transform:uppercase; letter-spacing:2px; font-size:1.1rem; }
+.btn-submit:hover { background-color:#00E3BB; border-color:#00E3BB; transform:translateY(-4px); box-shadow:0 0 60px rgba(0,255,209,1); }
+.theory-content, .mcqForm { display:none; }
+.theory-content.active, .mcqForm.active { display:block; animation: fadeIn 0.4s ease-in-out; }
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+.badge { font-size:0.85rem; padding:0.4rem 0.6rem; }
+.theory-content p, .theory-content ul, .theory-content pre, .theory-content li { color: var(--text-color); }
+</style>
+
+<div class="container my-5">
+  <!-- Header -->
+  <div class="text-center mb-5 main-header">
+    <h2 class="fw-bold"><%= subject %> - <%= type %></h2>
+    <p>Path2Tech >> Running Test Suite >> <%= difficulty %></p>
+  </div>
+
+  <% const difficulties = ["Easy","Medium","Hard"]; %>
+  <ul class="nav nav-tabs mb-4 justify-content-center" id="difficultyTabs">
+    <% difficulties.forEach(diff => { %>
+      <li class="nav-item">
+        <a class="nav-link <%= diff === difficulty ? 'active' : '' %>" href="#" data-difficulty="<%= diff %>"><%= diff %></a>
+      </li>
+    <% }) %>
+  </ul>
+
+  <% const t = theory[difficulty]; %>
+  <div class="card shadow-sm mb-4 position-relative question-card">
+    <div class="card-body">
+      <h5 class="fw-bold mb-3">
+        📚 Theory - <%= difficulty %>
+        <button class="btn btn-sm <%= progress[difficulty] ? 'btn-outline-success' : 'btn-outline-info' %> float-end toggle-theory-btn" data-difficulty="<%= difficulty %>">
+          <%= progress[difficulty] ? 'Hide Theory' : 'Show Theory' %>
+        </button>
+        <% if(progress[difficulty]) { %>
+          <span class="badge bg-success float-end ms-2">Read ✓</span>
+        <% } %>
+      </h5>
+
+      <div class="theory-content p-3 border rounded mt-2" id="theory-content-<%= difficulty %>" style="display:none; background-color:#0F1A1B;">
+        <% if (!t || Object.keys(t).length === 0) { %>
+          <p>Theory content not available.</p>
+        <% } else { %>
+          <% if (t.overview) { %><p><strong>Overview:</strong> <%= t.overview %></p><% } %>
+          <% if (t.concepts && t.concepts.length) { %>
+            <p><strong>Key Concepts:</strong></p>
+            <ul>
+              <% t.concepts.forEach(c => { %><li><%= c %></li><% }) %>
+            </ul>
+          <% } %>
+          <% if (t.example) { %>
+            <p><strong>Example:</strong></p>
+            <pre class="p-2 bg-light text-dark border rounded"><%= t.example %></pre>
+          <% } %>
+          <% if (t.tips && t.tips.length) { %>
+            <p><strong>Tips:</strong></p>
+            <ul>
+              <% t.tips.forEach(tip => { %><li><%= tip %></li><% }) %>
+            </ul>
+          <% } %>
+          <% if (t.references && t.references.length) { %>
+            <p><strong>References:</strong></p>
+            <ul>
+              <% t.references.forEach(ref => { %>
+                <li><a href="<%= ref %>" target="_blank"><%= ref %></a></li>
+              <% }) %>
+            </ul>
+          <% } %>
+          <% if (!progress[difficulty]) { %>
+            <button class="btn btn-sm btn-outline-success mt-3 mark-read-btn" data-difficulty="<%= difficulty %>">Mark as Read</button>
+          <% } %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- MCQs Section -->
+  <form class="mcqForm active" action="/modules/<%= subject %>/<%= type %>/<%= difficulty %>" method="POST" id="mcq-<%= difficulty %>">
+    <% (questions[difficulty] || []).forEach((q,index) => { %>
+      <div class="card shadow-sm mb-4 position-relative question-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <h5 class="fw-bold">Q<%= index+1 %>. <%= q.question %></h5>
+            <i class="bi bi-star fs-4 bookmark" data-question-id="<%= q.id %>"></i>
+          </div>
+          <% q.options.forEach((opt,i) => { %>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q<%= q.id %>" value="<%= opt %>" id="q<%= q.id %>opt<%= i %>">
+              <label class="form-check-label" for="q<%= q.id %>opt<%= i %>"><%= opt %></label>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% }) %>
+    <div class="text-center my-5">
+      <button type="submit" class="btn btn-submit"><i class="bi bi-cpu me-2"></i> Execute Submission</button>
+    </div>
+  </form>
+</div>
+
+<script>
+const subject = "<%= subject %>";
+const type = "<%= type %>";
+
+// Bookmark toggle
+document.querySelectorAll('.bookmark').forEach(star => {
+  star.addEventListener('click', () => {
+    star.classList.toggle('bi-star');
+    star.classList.toggle('bi-star-fill');
+    const qId = star.dataset.questionId;
+    console.log("Toggled bookmark for question:", qId);
+  });
+});
+
+// Difficulty tab switching
+document.querySelectorAll('#difficultyTabs .nav-link').forEach(tab => {
+  tab.addEventListener('click', e => {
+    e.preventDefault();
+    const selected = tab.dataset.difficulty;
+    window.location.href = `/modules/${encodeURIComponent(subject)}/${encodeURIComponent(type)}/${encodeURIComponent(selected)}`;
+  });
+});
+
+// Toggle Theory content
+document.querySelectorAll('.toggle-theory-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const diff = btn.dataset.difficulty;
+    const content = document.getElementById('theory-content-' + diff);
+    if (content) {
+      if (content.style.display === 'block') {
+        content.style.display = 'none';
+        btn.textContent = "Show Theory";
+        btn.classList.remove('btn-outline-secondary');
+        btn.classList.add(progress[diff] ? 'btn-outline-success' : 'btn-outline-info');
+      } else {
+        content.style.display = 'block';
+        btn.textContent = "Hide Theory";
+        btn.classList.remove(progress[diff] ? 'btn-outline-success' : 'btn-outline-info');
+        btn.classList.add('btn-outline-secondary');
+      }
+    }
+  });
+});
+
+// Mark theory as read
+document.querySelectorAll('.mark-read-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const diff = btn.dataset.difficulty;
+    try {
+      const res = await fetch(`/modules/mark-theory-read`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ subject, type, difficulty: diff })
+      });
+      if(res.ok){
+        btn.outerHTML = '<span class="badge bg-success">Read ✓</span>';
+      }
+    } catch(err){ console.error(err); }
+  });
+});
+</script>
