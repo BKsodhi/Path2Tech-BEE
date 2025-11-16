@@ -188,3 +188,29 @@ document.querySelectorAll('.mark-read-btn').forEach(btn => {
   });
 });
 </script>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+
+  // Emit event when MCQ is submitted
+  document.querySelectorAll(".form-check-input").forEach(input => {
+    input.addEventListener("change", (e) => {
+      const questionId = e.target.name.slice(1);
+      const answer = e.target.value;
+
+      socket.emit("submitAnswer", { questionId, answer });
+    });
+  });
+
+  // Listen for server acknowledgment
+  socket.on("answerReceived", (data) => {
+    console.log("Server received answer for question:", data.questionId);
+  });
+
+  // Example: listen for real-time progress updates
+  socket.on("newProgress", (data) => {
+    console.log("New progress from another user:", data);
+    // Optionally update the dashboard in real-time
+  });
+</script>

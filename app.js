@@ -114,13 +114,18 @@
 
 
 const express = require("express");
+const http = require("http");
+
 const expressLayouts = require("express-ejs-layouts");
 const session = require("express-session");
 const flash = require("connect-flash");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-const axios = require("axios"); // ✅ Added for compiler integration
+const axios = require("axios");
+
+
+ // ✅ Added for compiler integration
 
 // ------------------- Routes -------------------
 const progressRoutes = require("./routes/progress");
@@ -137,6 +142,9 @@ const JWT_SECRET = "jwttoken";
 const SESSION_SECRET = "path2tech_secret";
 
 const app = express();
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 
 // ------------------- Middleware Setup -------------------
 
@@ -168,6 +176,7 @@ app.use(expressLayouts);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.set("layout", "partials/layout");
+app.set("io", io);
 
 // Static files
 app.use(express.static(path.join(__dirname, "public")));
@@ -193,6 +202,28 @@ app.use((req, res, next) => {
   res.locals.error_msg = req.flash("error_msg");
   res.locals.currentPath = req.path;
   next();
+});
+io.on("connection", (socket) => {
+  console.log("New client connected:", socket.id);
+
+  // Example: listening for MCQ answer submission
+  socket.on("submitAnswer", (data) => {
+    console.log("Answer submitted:", data);
+
+    // You can emit an event back to client(s)
+    socket.emit("answerReceived", { success: true, questionId: data.questionId });
+  });
+
+  // Example: broadcasting progress updates
+  socket.on("progressUpdate", (data) => {
+    console.log("Progress update:", data);
+    // Broadcast to all other users (except sender)
+    socket.broadcast.emit("newProgress", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
+  });
 });
 
 // ------------------- Routes -------------------
@@ -231,6 +262,8 @@ app.use((req, res) => {
 
 // ------------------- Error Handler -------------------
 app.use(errorHandler);
+
+
 
 // ------------------- Server Start -------------------
 const PORT = 5000;
