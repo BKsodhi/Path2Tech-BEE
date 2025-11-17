@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register - Path2Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <style>
+    /* 🎨 UNIQUE CHARCOAL & NEON THEME VARIABLES */
+    :root {
+      --primary-charcoal: #2D3A47;
+      --primary-dark: #1F2733; 
+      --accent-neon: #00FFD1; 
+      --success-color: #A3FF00; 
+      --text-color: #E5E7EB;
+      --text-dark: #1F2937;
+    }
+    
+    /* Custom utility class for guaranteed neon text */
+    .text-neon {
+        color: var(--accent-neon) !important;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      /* Dark Gradient Background */
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary-charcoal));
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: bgAnimation 15s infinite alternate;
+    }
+
+    @keyframes bgAnimation {
+      0% { background-size: 100% 100%; }
+      100% { background-size: 150% 150%; }
+    }
+
+    .auth-card {
+      background: rgba(45, 58, 71, 0.95); 
+      border: 1px solid var(--accent-neon);
+      border-radius: 15px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 0 40px rgba(0, 255, 209, 0.3);
+      animation: fadeIn 0.7s ease-out;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(-20px);}
+      100% { opacity: 1; transform: translateY(0);}
+    }
+
+    /* Adjusted h2 styling to use the new class */
+    h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    
+    .form-control {
+      background-color: var(--primary-dark);
+      color: var(--text-color);
+      border: 1px solid var(--primary-charcoal);
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      padding: 0.8rem 1rem;
+    }
+    .form-control::placeholder {
+        color: rgba(229, 231, 235, 0.5);
+    }
+
+    .form-control:focus {
+      background-color: var(--primary-dark);
+      color: var(--accent-neon);
+      border-color: var(--accent-neon);
+      box-shadow: 0 0 8px rgba(0, 255, 209, 0.6);
+    }
+    
+    .form-control option {
+        background-color: var(--primary-charcoal);
+        color: var(--text-color);
+    }
+
+    .btn-auth {
+      width: 100%;
+      border-radius: 8px;
+      padding: 0.85rem;
+      font-weight: 700;
+      background-color: var(--accent-neon); 
+      border: none;
+      color: var(--text-dark);
+      transition: 0.3s;
+      box-shadow: 0 5px 15px rgba(0, 255, 209, 0.4);
+    }
+
+    .btn-auth:hover {
+      background-color: #00E3BB;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 255, 209, 0.6);
+    }
+    
+    .btn-auth:active {
+        background-color: #00C6A0 !important;
+    }
+
+    .auth-footer {
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+      text-align: center;
+      color: var(--text-color);
+    }
+
+    .auth-footer a {
+      color: var(--success-color);
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .auth-footer a:hover {
+      color: var(--success-color);
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-card">
+    <h2 class="text-neon"><i class="bi bi-person-plus-fill me-2"></i> Register</h2>
+    <form action="/register" method="POST">
+      <input type="text" name="username" class="form-control" placeholder="Full Name" required>
+      <input type="email" name="email" class="form-control" placeholder="Email" required>
+      <input type="password" name="password" class="form-control" placeholder="Password" required>
+      <select name="role" class="form-control mb-3" required>
+        <option value="user">User (Student/Learner)</option>
+        <option value="admin">Admin (Educator/Creator)</option>
+      </select>
+      <button type="submit" class="btn btn-auth">Register</button>
+    </form>
+    <div class="auth-footer">
+      <p>Already have an account? <a href="/login">Login</a></p>
+    </div>
+  </div>
+</body>
+</html>
