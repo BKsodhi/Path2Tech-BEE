@@ -4,7 +4,75 @@ const router = express.Router();
 const { calculatePercentage } = require("../utils/progressUtil");
 const { ensureAuth } = require("../middleware/auth");
 
-// Show MCQs
+/* ---------------------- THEORY PAGE ---------------------- */
+router.get("/:subject/Theory", ensureAuth, async (req, res) => {
+  const { subject } = req.params;
+
+  try {
+    const result = await pool.query(
+      `SELECT * FROM notes WHERE subject=$1 ORDER BY id`,
+      [subject]
+    );
+
+    res.render("notesPage", {
+      title: `${subject} - Theory`,
+      subject,
+      notes: result.rows,
+      user: req.user
+    });
+  } catch (err) {
+    console.error("Error loading theory:", err);
+    req.flash("error_msg", "Failed to load theory.");
+    res.redirect("/");
+  }
+});
+
+/* ---------------------- NOTES PAGE (PLACE THIS FIRST!!) ---------------------- */
+router.get("/:subject/Notes/:difficulty", ensureAuth, async (req, res) => {
+  const { subject, difficulty } = req.params;
+
+  try {
+    const notes = await pool.query(
+      `SELECT * FROM notes WHERE subject=$1 AND difficulty=$2 ORDER BY id`,
+      [subject, difficulty]
+    );
+
+    res.render("notesPage", {
+      title: `${subject} Notes (${difficulty})`,
+      subject,
+      difficulty,
+      notes: notes.rows,
+      user: req.user
+    });
+  } catch (err) {
+    console.error("Error loading notes:", err);
+    req.flash("error_msg", "Failed to load notes.");
+    res.redirect("/");
+  }
+});
+
+/* ---------------------- MARK NOTE AS READ ---------------------- */
+router.post("/mark-read/:note_id", ensureAuth, async (req, res) => {
+  const user_id = req.user.id;
+  const note_id = req.params.note_id;
+
+  try {
+    await pool.query(
+      `INSERT INTO notes_read (user_id, note_id, read_at)
+       VALUES ($1, $2, NOW())`,
+      [user_id, note_id]
+    );
+
+    req.flash("success_msg", "Marked as read!");
+    res.redirect("back");
+  } catch (err) {
+    console.error(err);
+    req.flash("error_msg", "Error marking as read");
+    res.redirect("back");
+  }
+});
+
+/* ---------------------- MCQ PAGE ---------------------- */
 router.get("/:subject/:type/:difficulty", ensureAuth, async (req, res) => {
   const { subject, type, difficulty } = req.params;
 
@@ -35,7 +103,7 @@ router.get("/:subject/:type/:difficulty", ensureAuth, async (req, res) => {
   }
 });
 
-// Handle submission
+/* ---------------------- MCQ SUBMIT ---------------------- */
 router.post("/:subject/:type/:difficulty", ensureAuth, async (req, res) => {
   const { subject, type, difficulty } = req.params;
   const user_id = req.user.id;
@@ -57,13 +125,12 @@ router.post("/:subject/:type/:difficulty", ensureAuth, async (req, res) => {
       [subject, type, difficulty]
     );
 
-   const feedback = result.rows.map(q => {
-  const userAnswer = answers[q.id] || "(No Answer)";
-  const correctAnswer = q.correct_answer || "";
-  const isCorrect = userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase();
-  return { ...q, userAnswer, correctAnswer, isCorrect };
-});
-
+    const feedback = result.rows.map(q => {
+      const userAnswer = answers[q.id] || "(No Answer)";
+      const correctAnswer = q.correct_answer || "";
+      const isCorrect = userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase();
+      return { ...q, userAnswer, correctAnswer, isCorrect };
+    });
 
     const score = feedback.filter(f => f.isCorrect).length;
     const total = feedback.length;

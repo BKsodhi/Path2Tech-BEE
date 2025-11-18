@@ -201,9 +201,9 @@
 
 <script>
   // Inject dynamic data from backend
-  const summaryData = <%- JSON.stringify(summary) %>;
-  const attemptsData = <%- JSON.stringify(attempts) %>;
-  const skillData = <%- JSON.stringify(skillData) %>;
+  const summaryData = JSON.parse('<%- JSON.stringify(summary) %>');
+  const attemptsData = JSON.parse('<%- JSON.stringify(attempts) %>');
+  const skillData = JSON.parse('<%- JSON.stringify(skillData) %>');
 
   // Line Chart Setup
   new Chart(document.getElementById('lineChart'), {
