@@ -40,7 +40,6 @@
   .text-danger-neon { color: var(--danger-color) !important; }
 </style>
 
-
 <div class="my-5 welcome-card text-center">
   <h1 class="fw-bolder mb-3" style="font-size: 2.5rem; color: var(--accent-neon);">
       Welcome to Path2Tech: Prep.Track.Succeed
@@ -79,6 +78,11 @@
                 <%= diff %>
               </a>
             <% }) %>
+            <!-- Notes Button styled same as Easy/Medium/Hard -->
+            <a href="/modules/<%= sub.name %>/Notes/Easy" 
+               class="btn btn-primary px-3 fw-semibold btn-sm">
+              Notes
+            </a>
           </div>
         </div>
       </div>
