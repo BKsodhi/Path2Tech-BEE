@@ -1,0 +1,11 @@
+# Node modules should never be pushed to GitHub
+node_modules/
+
+# Logs
+npm-debug.log
+yarn-error.log
+
+# Environment and system files
+.env
+.DS_Store
+Thumbs.db

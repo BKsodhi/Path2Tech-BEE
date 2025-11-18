@@ -1,0 +1,34 @@
+<h2>Registered Users</h2>
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Username</th>
+			<th>Email</th>
+			<th>Role</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% if (users && users.length) { %>
+			<% users.forEach(u => { %>
+				<tr>
+					<td><%= u.id %></td>
+					<td><%= u.username %></td>
+					<td><%= u.email %></td>
+					<td><%= u.role %></td>
+					<td>
+						<% if (u.role !== 'admin') { %>
+						<form action="/admin/users/delete/<%= u.id %>" method="POST" onsubmit="return confirm('Delete user <%= u.username %>? This is irreversible.');" style="display:inline">
+							<button class="btn btn-danger btn-sm">Delete</button>
+						</form>
+						<% } %>
+					</td>
+				</tr>
+			<% }) %>
+		<% } else { %>
+			<tr><td colspan="5">No users found.</td></tr>
+		<% } %>
+	</tbody>
+</table>
