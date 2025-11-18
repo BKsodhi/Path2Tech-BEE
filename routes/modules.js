@@ -4,6 +4,7 @@ const router = express.Router();
 const { calculatePercentage } = require("../utils/progressUtil");
 const { ensureAuth } = require("../middleware/auth");
 
+<<<<<<< HEAD
 /* ---------------------- THEORY PAGE ---------------------- */
 router.get("/:subject/Theory", ensureAuth, async (req, res) => {
   const { subject } = req.params;
@@ -73,6 +74,9 @@ router.post("/mark-read/:note_id", ensureAuth, async (req, res) => {
 });
 
 /* ---------------------- MCQ PAGE ---------------------- */
+=======
+// Show MCQs
+>>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
 router.get("/:subject/:type/:difficulty", ensureAuth, async (req, res) => {
   const { subject, type, difficulty } = req.params;
 
@@ -103,7 +107,11 @@ router.get("/:subject/:type/:difficulty", ensureAuth, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 /* ---------------------- MCQ SUBMIT ---------------------- */
+=======
+// Handle submission
+>>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
 router.post("/:subject/:type/:difficulty", ensureAuth, async (req, res) => {
   const { subject, type, difficulty } = req.params;
   const user_id = req.user.id;
@@ -125,12 +133,22 @@ router.post("/:subject/:type/:difficulty", ensureAuth, async (req, res) => {
       [subject, type, difficulty]
     );
 
+<<<<<<< HEAD
     const feedback = result.rows.map(q => {
       const userAnswer = answers[q.id] || "(No Answer)";
       const correctAnswer = q.correct_answer || "";
       const isCorrect = userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase();
       return { ...q, userAnswer, correctAnswer, isCorrect };
     });
+=======
+   const feedback = result.rows.map(q => {
+  const userAnswer = answers[q.id] || "(No Answer)";
+  const correctAnswer = q.correct_answer || "";
+  const isCorrect = userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase();
+  return { ...q, userAnswer, correctAnswer, isCorrect };
+});
+
+>>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
 
     const score = feedback.filter(f => f.isCorrect).length;
     const total = feedback.length;
@@ -160,3 +178,20 @@ router.post("/:subject/:type/:difficulty", ensureAuth, async (req, res) => {
 });
 
 module.exports = router;
+<<<<<<< HEAD
+=======
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8

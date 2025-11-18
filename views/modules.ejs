@@ -170,11 +170,15 @@
     <p>Path2Tech >> Running Test Suite >> <%= subject %>/<%= difficulty %></p>
   </div>
 
+<<<<<<< HEAD
   <!-- ⭐ DIFFICULTY + NOTES TAB ADDED HERE -->
+=======
+>>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
   <% const difficulties = ["Easy", "Medium", "Hard"]; %>
   <ul class="nav nav-tabs mb-5 justify-content-center">
     <% difficulties.forEach(diff => { %>
       <li class="nav-item">
+<<<<<<< HEAD
         <a class="nav-link <%= diff === difficulty && type !== 'Notes' ? 'active' : '' %>" 
            href="/modules/<%= subject %>/MCQ/<%= diff %>"><%= diff %></a>
       </li>
@@ -187,6 +191,12 @@
          Notes
       </a>
     </li>
+=======
+        <a class="nav-link <%= diff === difficulty ? 'active' : '' %>" 
+           href="/modules/<%= subject %>/MCQ/<%= diff %>"><%= diff %></a>
+      </li>
+    <% }) %>
+>>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
   </ul>
 
   <form id="mcqForm" action="/modules/<%= subject %>/<%= type %>/<%= difficulty %>" method="POST">
@@ -195,9 +205,14 @@
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-start mb-3">
             <h5 class="fw-bold">Q<%= index + 1 %>. <%= q.question %></h5>
+<<<<<<< HEAD
 
             <i class="bi bi-star fs-4 bookmark" 
                style="cursor:pointer;"
+=======
+            <i class="bi bi-star fs-4 bookmark" 
+               style="cursor:pointer;" 
+>>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
                data-question-id="<%= q.id %>"></i>
           </div>
 
@@ -207,13 +222,19 @@
                      name="q<%= q.id %>" 
                      value="<%= opt %>" 
                      id="q<%= q.id %>opt<%= i %>">
+<<<<<<< HEAD
 
+=======
+>>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
               <label class="form-check-label" for="q<%= q.id %>opt<%= i %>">
                 <%= opt %>
               </label>
             </div>
           <% }) %>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
         </div>
       </div>
     <% }) %>
@@ -227,10 +248,23 @@
 </div>
 
 <script>
+<<<<<<< HEAD
+=======
+  // Bookmark toggle 
+>>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
   document.querySelectorAll('.bookmark').forEach(star => {
     star.addEventListener('click', () => {
       star.classList.toggle('bi-star');
       star.classList.toggle('bi-star-fill');
+<<<<<<< HEAD
     });
   });
 </script>
+=======
+      const qId = star.dataset.questionId;
+      console.log("Toggled bookmark for question:", qId);
+    });
+  });
+</script>
+
+>>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
