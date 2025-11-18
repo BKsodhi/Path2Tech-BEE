@@ -1,3 +1,4 @@
+// Core modules
 const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
 const session = require("express-session");
@@ -5,27 +6,25 @@ const flash = require("connect-flash");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-const axios = require("axios"); // ✅ Added for compiler integration
+const axios = require("axios");
 
-// ------------------- Routes -------------------
+// Routes
 const progressRoutes = require("./routes/progress");
 const moduleRoutes = require("./routes/modules");
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
-const codingRoutes = require("./routes/coding"); // ✅ Coding challenges route
+const codingRoutes = require("./routes/coding");
 
-// ------------------- Middleware -------------------
+// Middleware
 const { ensureAuth, ensureGuest, logger, errorHandler } = require("./middleware/auth");
 
-// ------------------- Constants -------------------
+// Secrets
 const JWT_SECRET = "jwttoken";
 const SESSION_SECRET = "path2tech_secret";
 
 const app = express();
 
-// ------------------- Middleware Setup -------------------
-
-// Body parser (native Express)
+// Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -38,7 +37,7 @@ app.use(
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 }, // 1 hour
+    cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 },
   })
 );
 
@@ -57,13 +56,12 @@ app.set("layout", "partials/layout");
 // Static files
 app.use(express.static(path.join(__dirname, "public")));
 
-// ------------------- JWT Middleware -------------------
+// JWT user verification
 app.use((req, res, next) => {
   const token = req.cookies?.token;
   if (token) {
     try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      req.user = decoded;
+      req.user = jwt.verify(token, JWT_SECRET);
     } catch {
       res.clearCookie("token");
     }
@@ -71,7 +69,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// ------------------- Global Template Variables -------------------
+// Global template variables
 app.use((req, res, next) => {
   res.locals.user = req.user || null;
   res.locals.success_msg = req.flash("success_msg");
@@ -80,33 +78,23 @@ app.use((req, res, next) => {
   next();
 });
 
-// ------------------- Routes -------------------
-
-// Auth routes (login, register, logout)
+// Auth routes
 app.use("/", authRoutes);
 
 // Protected routes
 app.use("/progress", ensureAuth, progressRoutes);
 app.use("/modules", ensureAuth, moduleRoutes);
 app.use("/admin", ensureAuth, adminRoutes);
-
-// ✅ Coding route (protected)
 app.use("/coding", ensureAuth, codingRoutes);
 
-// ------------------- Root & Defaults -------------------
-
-// Default route → redirect based on user role
+// Home route
 app.get("/", (req, res) => {
   if (!req.user) return res.redirect("/login");
-
-  if (req.user.role === "admin") {
-    return res.redirect("/admin/dashboard");
-  }
-
+  if (req.user.role === "admin") return res.redirect("/admin/dashboard");
   res.render("index", { title: "Home - Path2Tech" });
 });
 
-// ------------------- 404 Handler -------------------
+// 404 handler
 app.use((req, res) => {
   res.status(404).render("error", {
     title: "404 - Not Found",
@@ -114,10 +102,10 @@ app.use((req, res) => {
   });
 });
 
-// ------------------- Error Handler -------------------
+// Error handler
 app.use(errorHandler);
 
-// ------------------- Server Start -------------------
+// Start server
 const PORT = 5000;
 app.listen(PORT, () =>
   console.log(`🚀 Server running at http://localhost:${PORT}`)

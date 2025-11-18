@@ -1,78 +1,68 @@
 <% title = subject + " - " + type + " (" + difficulty + ")" %>
 
 <style>
-  /* 🎨 REVISED DEEP CHARCOAL & NEON THEME (CRISP) */
+  /* Theme variables */
   :root {
-      --primary-charcoal: #1C232B; /* Deep Charcoal BG for depth */
-      --primary-dark: #12181F;     /* Slightly darker than card for separators */
-      --accent-neon: #00FFD1;      /* Bright Neon Teal */
-      --success-color: #A3FF00;    /* Bright Neon Lime */
-      --text-color: #E5E7EB;       /* Light White Text */
-      --text-muted-dark: #7B8A99;  /* Muted grey for inactive text */
-      --text-dark: #000000;        /* Pure black text on neon */
-      --card-bg: var(--primary-charcoal); /* Card background set to deep charcoal */
+      --primary-charcoal: #1C232B;
+      --primary-dark: #12181F;
+      --accent-neon: #00FFD1;
+      --success-color: #A3FF00;
+      --text-color: #E5E7EB;
+      --text-muted-dark: #7B8A99;
+      --text-dark: #000000;
+      --card-bg: var(--primary-charcoal);
   }
 
-  .container {
-      color: var(--text-color);
-  }
+  .container { color: var(--text-color); }
 
-  /* --- Page Header --- */
+  /* Page header */
   .main-header h2 {
       color: var(--primary-charcoal);
-      /* FIX 1: Tighter glow radius for crisp text */
-      /* text-shadow: 0 0 5px rgba(0, 255, 209, 0.8), 0 0 10px rgba(0, 255, 209, 0.4); */
       letter-spacing: 1px;
       text-transform: uppercase;
   }
   .main-header p {
-      /* FIX 2: Force color to Neon and add subtle shadow for contrast */
       color: var(--primary-charcoal);
       opacity: 0.8;
       text-shadow: 0 0 2px rgba(0, 255, 209, 0.4);
-      margin-top: -5px; 
+      margin-top: -5px;
       margin-bottom: 2rem;
   }
 
-  /* --- Difficulty Tabs --- */
-  .nav-tabs { 
-      border-bottom: 2px solid var(--accent-neon);
-  }
-  .nav-tabs .nav-item {
-      /* FIX 3: Increased margin for better spacing */
-      margin: 0 10px; 
-  }
-  .nav-tabs .nav-link { 
-      color: var(--accent-neon); 
+  /* Difficulty tabs styling */
+  .nav-tabs { border-bottom: 2px solid var(--accent-neon); }
+  .nav-tabs .nav-item { margin: 0 10px; }
+  .nav-tabs .nav-link {
+      color: var(--accent-neon);
       background-color: var(--primary-dark);
       border: 1px solid var(--accent-neon);
       border-bottom: none;
       box-shadow: 0 0 5px rgba(0, 255, 209, 0.3);
       font-weight: 500;
-      text-transform: uppercase; 
+      text-transform: uppercase;
       letter-spacing: 0.5px;
-      padding: 0.5rem 1.2rem; /* Adjusted padding for better visual weight */
+      padding: 0.5rem 1.2rem;
   }
-  .nav-tabs .nav-link:hover { 
-      background-color: var(--primary-charcoal); 
+  .nav-tabs .nav-link:hover {
+      background-color: var(--primary-charcoal);
       color: var(--text-color);
   }
-  .nav-tabs .nav-link.active { 
+  .nav-tabs .nav-link.active {
       color: var(--text-dark) !important;
-      background-color: var(--accent-neon); 
-      border-color: var(--accent-neon) !important; 
+      background-color: var(--accent-neon);
+      border-color: var(--accent-neon) !important;
       font-weight: 700;
       box-shadow: 0 0 15px var(--accent-neon);
-      transform: translateY(-4px); 
+      transform: translateY(-4px);
   }
 
-  /* --- Question Cards --- */
+  /* Question card styling */
   .question-card {
-      background-color: var(--card-bg); 
-      border: 2px solid var(--primary-dark); 
-      border-left: 6px solid var(--accent-neon); 
-      border-radius: 8px; 
-      box-shadow: 0 0 18px rgba(0, 255, 209, 0.5); 
+      background-color: var(--card-bg);
+      border: 2px solid var(--primary-dark);
+      border-left: 6px solid var(--accent-neon);
+      border-radius: 8px;
+      box-shadow: 0 0 18px rgba(0, 255, 209, 0.5);
       transition: box-shadow 0.3s, transform 0.3s;
   }
   .question-card:hover {
@@ -81,43 +71,38 @@
   }
   .question-card h5 {
       color: var(--text-color);
-      border-bottom: 1px solid rgba(0, 255, 209, 0.2); 
+      border-bottom: 1px solid rgba(0, 255, 209, 0.2);
       padding-bottom: 10px;
       margin-bottom: 15px;
   }
 
-  /* --- Bookmark Icon --- */
-  .bookmark {
-      color: var(--accent-neon) !important;
-      filter: opacity(0.5);
-  }
+  /* Bookmark icon */
+  .bookmark { color: var(--accent-neon) !important; filter: opacity(0.5); }
   .bi-star-fill {
       color: var(--success-color) !important;
       filter: drop-shadow(0 0 5px var(--success-color));
   }
 
-  /* --- Form Options (Radio Buttons) --- */
+  /* Radio option styling */
   .form-check { margin-bottom: 0.5rem; padding-left: 0; }
-  .form-check-label { 
-      color: var(--text-color); 
+  .form-check-label {
+      color: var(--text-color);
       background-color: var(--primary-dark);
       border: 1px solid var(--primary-charcoal);
       border-radius: 4px;
-      padding: 0.75rem 1rem 0.75rem 3rem; 
+      padding: 0.75rem 1rem 0.75rem 3rem;
       display: block;
       width: 100%;
       transition: all 0.2s;
       position: relative;
   }
-  
   .form-check-input {
       position: absolute;
       opacity: 0;
       cursor: pointer;
   }
-  
   .form-check-label::before {
-      content: '>'; 
+      content: '>';
       font-size: 1.2rem;
       font-weight: 700;
       color: var(--accent-neon);
@@ -127,22 +112,20 @@
       transform: translateY(-50%);
       transition: all 0.2s;
   }
-  
   .form-check-input:checked + .form-check-label {
-      color: var(--success-color); 
+      color: var(--success-color);
       font-weight: 600;
-      background-color: #0F1A1B; 
+      background-color: #0F1A1B;
       border-color: var(--success-color);
-      box-shadow: 0 0 10px rgba(163, 255, 0, 0.5); 
+      box-shadow: 0 0 10px rgba(163, 255, 0, 0.5);
   }
-
   .form-check-input:checked + .form-check-label::before {
-      content: '✓'; 
+      content: '✓';
       color: var(--success-color);
       text-shadow: 0 0 5px var(--success-color);
   }
 
-  /* --- Submit Button --- */
+  /* Submit button */
   .btn-submit {
       background-color: var(--accent-neon);
       border-color: var(--accent-neon);
@@ -161,110 +144,78 @@
       transform: translateY(-4px);
       box-shadow: 0 0 60px rgba(0, 255, 209, 1);
   }
-
 </style>
 
+<!-- Page Container -->
 <div class="container my-5">
+  
+  <!-- Page Header -->
   <div class="text-center mb-5 main-header">
     <h2 class="fw-bold"><%= subject %> - <%= type %> (<%= difficulty %>)</h2>
     <p>Path2Tech >> Running Test Suite >> <%= subject %>/<%= difficulty %></p>
   </div>
 
-<<<<<<< HEAD
-  <!-- ⭐ DIFFICULTY + NOTES TAB ADDED HERE -->
-=======
->>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
+  <!-- Difficulty Tabs -->
   <% const difficulties = ["Easy", "Medium", "Hard"]; %>
   <ul class="nav nav-tabs mb-5 justify-content-center">
     <% difficulties.forEach(diff => { %>
       <li class="nav-item">
-<<<<<<< HEAD
-        <a class="nav-link <%= diff === difficulty && type !== 'Notes' ? 'active' : '' %>" 
-           href="/modules/<%= subject %>/MCQ/<%= diff %>"><%= diff %></a>
-      </li>
-    <% }) %>
-
-    <!-- ⭐ NEW NOTES TAB -->
-    <li class="nav-item">
-      <a class="nav-link <%= type === 'Notes' ? 'active' : '' %>"
-         href="/modules/<%= subject %>/Notes/<%= difficulty %>">
-         Notes
-      </a>
-    </li>
-=======
         <a class="nav-link <%= diff === difficulty ? 'active' : '' %>" 
            href="/modules/<%= subject %>/MCQ/<%= diff %>"><%= diff %></a>
       </li>
     <% }) %>
->>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
   </ul>
 
+  <!-- MCQ Form -->
   <form id="mcqForm" action="/modules/<%= subject %>/<%= type %>/<%= difficulty %>" method="POST">
+    
     <% questions.forEach((q, index) => { %>
+      <!-- MCQ Card -->
       <div class="card shadow-sm mb-4 position-relative question-card">
         <div class="card-body">
+
+          <!-- Question & Bookmark -->
           <div class="d-flex justify-content-between align-items-start mb-3">
             <h5 class="fw-bold">Q<%= index + 1 %>. <%= q.question %></h5>
-<<<<<<< HEAD
-
-            <i class="bi bi-star fs-4 bookmark" 
-               style="cursor:pointer;"
-=======
             <i class="bi bi-star fs-4 bookmark" 
                style="cursor:pointer;" 
->>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
                data-question-id="<%= q.id %>"></i>
           </div>
 
+          <!-- Options -->
           <% q.options.forEach((opt, i) => { %>
             <div class="form-check">
               <input class="form-check-input" type="radio" 
                      name="q<%= q.id %>" 
                      value="<%= opt %>" 
                      id="q<%= q.id %>opt<%= i %>">
-<<<<<<< HEAD
-
-=======
->>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
               <label class="form-check-label" for="q<%= q.id %>opt<%= i %>">
                 <%= opt %>
               </label>
             </div>
           <% }) %>
-<<<<<<< HEAD
-
-=======
->>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
         </div>
       </div>
     <% }) %>
 
+    <!-- Submit Button -->
     <div class="text-center my-5">
       <button type="submit" class="btn btn-submit">
           <i class="bi bi-cpu me-2"></i> Execute Submission
       </button>
     </div>
+
   </form>
 </div>
 
 <script>
-<<<<<<< HEAD
-=======
-  // Bookmark toggle 
->>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
+  // Toggle bookmark icon
   document.querySelectorAll('.bookmark').forEach(star => {
     star.addEventListener('click', () => {
       star.classList.toggle('bi-star');
       star.classList.toggle('bi-star-fill');
-<<<<<<< HEAD
-    });
-  });
-</script>
-=======
       const qId = star.dataset.questionId;
       console.log("Toggled bookmark for question:", qId);
     });
   });
 </script>
-
->>>>>>> 731672c03c7038291adfa5a3610d9279fb2131a8
